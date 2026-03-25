@@ -7,8 +7,14 @@
     <meta name="description" content="500+ pre-built dental ads, AI lead response, AI receptionist, and SmileGen included. Replace your agency for a fraction of the cost. Book a demo.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
+    <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <link rel="dns-prefetch" href="https://fast.vidalytics.com">
+    <link rel="dns-prefetch" href="https://www.youtube.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"></noscript>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -967,7 +973,7 @@
     <!-- Nav -->
     <nav>
         <div class="nav-inner">
-            <img src="https://storage.googleapis.com/msgsndr/Zo56ZZP9H0UDmtC6AzQF/media/680f939dc3413a5657356810.png" alt="BiteBot" class="logo">
+            <img src="https://storage.googleapis.com/msgsndr/Zo56ZZP9H0UDmtC6AzQF/media/680f939dc3413a5657356810.png" alt="BiteBot" class="logo" decoding="async" width="120" height="36">
             <div class="nav-btns">
                 <a href="https://bitebot.io/scheduledemo" class="nav-demo">Book Demo</a>
                 <a href="https://bitebot.io/scheduledemo" class="nav-cta">Book Demo</a>
@@ -983,21 +989,28 @@
 
         <p class="hero-sub">Stop paying agencies thousands a month. BiteBot runs your dental ads, follows up with every lead, and books appointments — automatically. Starting at $297/mo.</p>
 
-        <!-- VSL Video -->
+        <!-- VSL Video — Click-to-load facade (saves ~1MB on initial load) -->
         <div class="vsl-wrap">
-            <div id="vidalytics_embed_ac9q3AK4l21dhUeR" style="width: 100%; position:relative; padding-top: 56.25%;"></div>
-            <script type="text/javascript">
-            (function (v, i, d, a, l, y, t, c, s) {
-                y='_'+d.toLowerCase();c=d+'L';if(!v[d]){v[d]={};}if(!v[c]){v[c]={};}if(!v[y]){v[y]={};}var vl='Loader',vli=v[y][vl],vsl=v[c][vl + 'Script'],vlf=v[c][vl + 'Loaded'],ve='Embed';
-                if (!vsl){vsl=function(u,cb){
-                    if(t){cb();return;}s=i.createElement("script");s.type="text/javascript";s.async=1;s.src=u;
-                    if(s.readyState){s.onreadystatechange=function(){if(s.readyState==="loaded"||s.readyState=="complete"){s.onreadystatechange=null;vlf=1;cb();}};}else{s.onload=function(){vlf=1;cb();};}
-                    i.getElementsByTagName("head")[0].appendChild(s);
-                };}
-                vsl(l+'loader.min.js',function(){if(!vli){var vlc=v[c][vl];vli=new vlc();}vli.loadScript(l+'player.min.js',function(){var vec=v[d][ve];t=new vec();t.run(a);});});
-            })(window, document, 'Vidalytics', 'vidalytics_embed_ac9q3AK4l21dhUeR', 'https://fast.vidalytics.com/embeds/HFT3dyQU/ac9q3AK4l21dhUeR/');
-            </script>
+            <div id="vsl-facade" style="width:100%;position:relative;padding-top:56.25%;background:linear-gradient(135deg,#0a0e17 0%,#111827 100%);cursor:pointer;border-radius:14px;overflow:hidden;" onclick="loadVidalytics()">
+                <!-- CSS-only play button + branding -->
+                <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+                    <div style="width:72px;height:72px;background:rgba(54,245,206,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform 0.2s,background 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <svg width="28" height="32" viewBox="0 0 28 32" fill="none"><polygon points="4,0 28,16 4,32" fill="#0A0E17"/></svg>
+                    </div>
+                    <span style="color:rgba(255,255,255,0.7);font-size:0.88rem;font-weight:600;">Watch how BiteBot replaces your agency</span>
+                </div>
+            </div>
+            <div id="vsl-player" style="display:none;width:100%;position:relative;padding-top:56.25%;">
+                <div id="vidalytics_embed_ac9q3AK4l21dhUeR" style="position:absolute;top:0;left:0;width:100%;height:100%;"></div>
+            </div>
         </div>
+        <script>
+        function loadVidalytics(){
+            document.getElementById('vsl-facade').style.display='none';
+            document.getElementById('vsl-player').style.display='block';
+            (function(v,i,d,a,l,y,t,c,s){y='_'+d.toLowerCase();c=d+'L';if(!v[d]){v[d]={};}if(!v[c]){v[c]={};}if(!v[y]){v[y]={};}var vl='Loader',vli=v[y][vl],vsl=v[c][vl+'Script'],vlf=v[c][vl+'Loaded'],ve='Embed';if(!vsl){vsl=function(u,cb){if(t){cb();return;}s=i.createElement("script");s.type="text/javascript";s.async=1;s.src=u;if(s.readyState){s.onreadystatechange=function(){if(s.readyState==="loaded"||s.readyState=="complete"){s.onreadystatechange=null;vlf=1;cb();}};}else{s.onload=function(){vlf=1;cb();};}i.getElementsByTagName("head")[0].appendChild(s);};}vsl(l+'loader.min.js',function(){if(!vli){var vlc=v[c][vl];vli=new vlc();}vli.loadScript(l+'player.min.js',function(){var vec=v[d][ve];t=new vec();t.run(a);});});})(window,document,'Vidalytics','vidalytics_embed_ac9q3AK4l21dhUeR','https://fast.vidalytics.com/embeds/HFT3dyQU/ac9q3AK4l21dhUeR/');
+        }
+        </script>
 
         <div class="cta-group">
             <a href="https://bitebot.io/scheduledemo" class="btn btn-primary">Book a Demo →</a>
@@ -1172,7 +1185,15 @@
             <p class="sec-sub">Listen to a real call handled by BiteBot's AI. It picks up, answers questions, and books appointments — 24/7.</p>
 
             <div class="ai-rec-wrap reveal">
-                <iframe src="https://www.youtube.com/embed/VV_skFMXdYc" title="BiteBot AI Receptionist Demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <!-- YouTube facade — loads real player on click (saves ~500KB) -->
+                <div id="yt-facade" style="position:relative;width:100%;aspect-ratio:16/9;background:#000;cursor:pointer;overflow:hidden;" onclick="loadYouTube()">
+                    <img src="https://i.ytimg.com/vi/VV_skFMXdYc/hqdefault.jpg" alt="BiteBot AI Receptionist Demo" style="width:100%;height:100%;object-fit:cover;opacity:0.75;" loading="lazy" decoding="async" width="480" height="360">
+                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:rgba(255,0,0,0.8);border-radius:12px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,0,0,1)'" onmouseout="this.style.background='rgba(255,0,0,0.8)'">
+                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none"><polygon points="0,0 18,10 0,20" fill="#fff"/></svg>
+                    </div>
+                </div>
+                <div id="yt-player" style="display:none;"><iframe id="yt-iframe" style="width:100%;aspect-ratio:16/9;display:block;border:none;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>
+                <script>function loadYouTube(){document.getElementById('yt-facade').style.display='none';document.getElementById('yt-player').style.display='block';document.getElementById('yt-iframe').src='https://www.youtube.com/embed/VV_skFMXdYc?autoplay=1&rel=0';}</script>
                 <div class="ai-rec-info">
                     <h4>Never miss another call. Ever.</h4>
                     <p>Your AI receptionist answers every call — evenings, weekends, holidays. It handles patient questions, schedules appointments, and sounds completely natural. No hold music. No voicemail. No missed revenue.</p>
@@ -1401,11 +1422,24 @@
         // Reveal
         const ob=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')}),{threshold:0.08});document.querySelectorAll('.reveal').forEach(e=>ob.observe(e));
 
+        // ===== UTM CAPTURE =====
+        // Grab UTMs + fbclid/gclid from landing page URL once on load
+        var _utms = {};
+        (function(){
+            var sp = new URLSearchParams(window.location.search);
+            ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(function(k){
+                var v = sp.get(k); if(v) _utms[k] = v;
+            });
+            // Also grab Meta ad params
+            ['campaign.id','placement','site_source_name'].forEach(function(k){
+                var v = sp.get(k); if(v) _utms[k] = v;
+            });
+        })();
+
         // ===== POPUP LOGIC =====
         function openPopup() {
             document.getElementById('demoPopup').classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Focus first field after animation
             setTimeout(() => document.getElementById('pp-name').focus(), 100);
         }
 
@@ -1414,12 +1448,10 @@
             document.body.style.overflow = '';
         }
 
-        // Close on overlay click (not the box)
         document.getElementById('demoPopup').addEventListener('click', function(e) {
             if (e.target === this) closePopup();
         });
 
-        // Close on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closePopup();
         });
@@ -1430,7 +1462,6 @@
             const phone = document.getElementById('pp-phone').value.trim();
             const practice = document.getElementById('pp-practice').value.trim();
 
-            // Basic validation
             if (!name || !email || !phone) {
                 alert('Please fill in your name, email, and phone.');
                 return;
@@ -1440,38 +1471,46 @@
             btn.disabled = true;
             btn.textContent = 'Redirecting...';
 
-            // 1. Send to GHL webhook (creates/updates contact)
-            // REPLACE this URL with your GHL webhook URL
+            // Fire Meta Pixel Lead event (works even if pixel loaded late via queue)
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Lead', { content_name: 'BiteBot Demo Request' });
+            }
+
+            // 1. Send to GHL webhook with UTMs
             const webhookUrl = 'https://services.leadconnectorhq.com/hooks/Zo56ZZP9H0UDmtC6AzQF/webhook-trigger/fb37fbc7-02e7-4ecf-83a8-39b5672fb39d';
-            
+
+            var payload = {
+                first_name: name.split(' ')[0],
+                last_name: name.split(' ').slice(1).join(' '),
+                full_name: name,
+                email: email,
+                phone: phone,
+                company_name: practice,
+                source: 'BiteBot VSL Landing Page',
+                tags: ['demo-request', 'vsl-landing'],
+                page_url: window.location.href
+            };
+            // Merge UTM data into payload
+            Object.keys(_utms).forEach(function(k){ payload[k] = _utms[k]; });
+
             fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    first_name: name.split(' ')[0],
-                    last_name: name.split(' ').slice(1).join(' '),
-                    full_name: name,
-                    email: email,
-                    phone: phone,
-                company_name: practice,
-                    source: 'BiteBot VSL Landing Page',
-                    tags: ['demo-request', 'vsl-landing']
-                })
-            }).catch(() => {
-                // Don't block redirect if webhook fails
-            });
+                body: JSON.stringify(payload)
+            }).catch(() => {});
 
-            // 2. Redirect to scheduling page with auto-fill params
-            const params = new URLSearchParams({
+            // 2. Redirect to scheduling page with auto-fill params + UTMs
+            var redirectParams = new URLSearchParams({
                 full_name: name,
                 email: email,
                 phone: phone,
                 practice_name: practice
             });
+            // Pass UTMs to scheduling page too
+            Object.keys(_utms).forEach(function(k){ redirectParams.set(k, _utms[k]); });
 
-            // Small delay to let webhook fire
             setTimeout(() => {
-                window.location.href = 'https://bitebot.io/scheduledemo?' + params.toString();
+                window.location.href = 'https://bitebot.io/scheduledemo?' + redirectParams.toString();
             }, 500);
         }
 
@@ -1482,6 +1521,28 @@
                 openPopup();
             });
         });
+    </script>
+
+    <!-- ===== DEFERRED TRACKING SCRIPTS ===== -->
+    <!-- Loads Meta Pixel, Clarity, FirstPromoter AFTER page is interactive -->
+    <script>
+    (function(){
+        var loaded=false;
+        function loadTracking(){
+            if(loaded)return;loaded=true;
+            // Meta Pixel
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init','1382483886295383');
+            fbq('track','PageView');
+            // Microsoft Clarity
+            (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","swirt0ls7l");
+            // FirstPromoter
+            (function(w){w.fpr=w.fpr||function(){w.fpr.q=w.fpr.q||[];w.fpr.q[arguments[0]=='set'?'unshift':'push'](arguments)};fpr("init",{cid:"cblk698u"});var s=document.createElement('script');s.async=true;s.src="https://cdn.firstpromoter.com/fpr.js";document.body.appendChild(s)})(window);
+        }
+        // Load after idle or first interaction (whichever first)
+        if('requestIdleCallback' in window){requestIdleCallback(function(){setTimeout(loadTracking,1500)},{timeout:4000});}else{setTimeout(loadTracking,3000);}
+        ['scroll','mousedown','touchstart','keydown'].forEach(function(e){document.addEventListener(e,function h(){loadTracking();['scroll','mousedown','touchstart','keydown'].forEach(function(e){document.removeEventListener(e,h,{passive:true})})},{passive:true})});
+    })();
     </script>
 
 </body>
