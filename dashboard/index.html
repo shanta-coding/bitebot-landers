@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landing Page Analytics — BiteBot</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0E17;--bg2:#0e1320;--card:#121829;--border:rgba(54,245,206,.12);--teal:#36F5CE;--teal-dim:rgba(54,245,206,.6);--orange:#FF6240;--text:#fff;--text2:rgba(255,255,255,.65);--green:#00D97E;--red:#FF4D4D}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.mono{font-family:'DM Mono',monospace}
+
+.top-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.top-bar h1{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-bar h1 span{color:var(--teal)}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+select,button{font-family:inherit;font-size:.82rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;transition:border-color .2s}
+select:focus,button:focus{outline:none;border-color:var(--teal)}
+button.refresh{background:var(--teal);color:#0A0E17;font-weight:700;border:none}
+button.refresh:hover{opacity:.9}
+
+.container{max-width:1100px;margin:0 auto;padding:24px 20px}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.kpi-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.kpi-val{font-size:2rem;font-weight:800}
+.kpi-val.teal{color:var(--teal)}
+.kpi-val.green{color:var(--green)}
+.kpi-sub{font-size:.78rem;color:var(--text2);margin-top:4px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.card-title span{color:var(--text2);font-size:.78rem;font-weight:400}
+
+.variants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.variant-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative}
+.variant-card.winner{border-color:var(--green)}
+.variant-card .badge{position:absolute;top:12px;right:12px;background:var(--green);color:#0A0E17;font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.variant-name{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.variant-slug{font-size:.78rem;color:var(--text2);margin-bottom:14px}
+.variant-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.vs-item{text-align:center;padding:10px 6px;background:rgba(54,245,206,.05);border-radius:8px}
+.vs-val{font-size:1.3rem;font-weight:800}
+.vs-label{font-size:.68rem;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+.chart-wrap{height:220px;position:relative;margin-top:10px}
+canvas{width:100%!important;height:100%!important}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:10px 14px;color:var(--text2);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03)}
+tr:hover td{background:rgba(54,245,206,.03)}
+.rate-pill{display:inline-block;padding:3px 10px;border-radius:50px;font-weight:700;font-size:.8rem}
+.rate-pill.high{background:rgba(0,217,126,.12);color:var(--green)}
+.rate-pill.low{background:rgba(255,77,77,.12);color:var(--red)}
+.rate-pill.mid{background:rgba(54,245,206,.12);color:var(--teal)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty h3{font-size:1.2rem;color:var(--text);margin-bottom:8px}
+
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text2)}
+.loading::after{content:'';width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;margin-left:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .kpi-val{font-size:1.5rem}
+  .variants-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>◆</span> Landing Page Analytics</h1>
+  <div class="controls">
+    <select id="pageFilter">
+      <option value="">All pages</option>
+      <option value="bitebot-vsl-landing">BiteBot VSL</option>
+      <option value="smilegen-demo">SmileGen Demo</option>
+    </select>
+    <select id="daysFilter">
+      <option value="7">Last 7 days</option>
+      <option value="14">Last 14 days</option>
+      <option value="30" selected>Last 30 days</option>
+      <option value="90">Last 90 days</option>
+    </select>
+    <button class="refresh" onclick="loadData()">Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="kpis" class="kpi-row"></div>
+  <div id="variants" class="variants-grid"></div>
+  <div id="chartCard" class="card" style="display:none">
+    <div class="card-title">Daily trend <span id="chartPeriod"></span></div>
+    <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+  </div>
+  <div id="tableCard" class="card" style="display:none">
+    <div class="card-title">Variant comparison</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Page</th><th>Variant</th><th>Pageviews</th><th>Unique visitors</th><th>Conversions</th><th>Opt-in rate</th><th>Unique opt-in</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="emptyState" class="empty" style="display:none">
+    <h3>No data yet</h3>
+    <p>Analytics will appear here once your landing pages start receiving traffic.<br>Make sure you've deployed the updated HTML files with the tracking snippet.</p>
+  </div>
+  <div id="loadingState" class="loading">Loading analytics...</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const ENDPOINT = 'https://llqaeockcoztgdjxgghn.supabase.co/functions/v1/lp-analytics';
+let chart = null;
+
+async function loadData() {
+  const page = document.getElementById('pageFilter').value;
+  const days = document.getElementById('daysFilter').value;
+  
+  document.getElementById('loadingState').style.display = 'flex';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('kpis').innerHTML = '';
+  document.getElementById('variants').innerHTML = '';
+  document.getElementById('chartCard').style.display = 'none';
+  document.getElementById('tableCard').style.display = 'none';
+
+  try {
+    let url = ENDPOINT + '/stats?days=' + days;
+    if (page) url += '&page_slug=' + page;
+    
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    document.getElementById('loadingState').style.display = 'none';
+    
+    if (!data.stats || data.stats.length === 0) {
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    renderKPIs(data.stats);
+    renderVariants(data.stats);
+    renderChart(data.stats, days);
+    renderTable(data.stats);
+    
+  } catch (err) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('emptyState').querySelector('h3').textContent = 'Connection error';
+    document.getElementById('emptyState').querySelector('p').textContent = err.message;
+  }
+}
+
+function renderKPIs(stats) {
+  let totalViews = 0, totalConversions = 0, totalUnique = 0;
+  stats.forEach(s => {
+    totalViews += s.pageviews;
+    totalConversions += s.conversions;
+    totalUnique += s.unique_visitors;
+  });
+  const rate = totalViews > 0 ? ((totalConversions / totalViews) * 100).toFixed(1) : '0.0';
+  
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Total pageviews</div><div class="kpi-val teal mono">${totalViews.toLocaleString()}</div><div class="kpi-sub">${totalUnique.toLocaleString()} unique visitors</div></div>
+    <div class="kpi"><div class="kpi-label">Total conversions</div><div class="kpi-val mono">${totalConversions.toLocaleString()}</div><div class="kpi-sub">Form submissions</div></div>
+    <div class="kpi"><div class="kpi-label">Overall opt-in rate</div><div class="kpi-val green mono">${rate}%</div><div class="kpi-sub">Conversions / pageviews</div></div>
+    <div class="kpi"><div class="kpi-label">Active variants</div><div class="kpi-val mono">${stats.length}</div><div class="kpi-sub">Across ${new Set(stats.map(s=>s.page_slug)).size} page(s)</div></div>
+  `;
+}
+
+function renderVariants(stats) {
+  if (stats.length <= 1) {
+    document.getElementById('variants').innerHTML = '';
+    return;
+  }
+  
+  let best = stats[0];
+  stats.forEach(s => {
+    if (parseFloat(s.opt_in_rate) > parseFloat(best.opt_in_rate)) best = s;
+  });
+  
+  document.getElementById('variants').innerHTML = stats.map(s => {
+    const isWinner = stats.length > 1 && s === best && parseFloat(s.opt_in_rate) > 0;
+    return `
+    <div class="variant-card${isWinner ? ' winner' : ''}">
+      ${isWinner ? '<div class="badge">Leading</div>' : ''}
+      <div class="variant-name">${s.variant_name}</div>
+      <div class="variant-slug">${s.page_slug}</div>
+      <div class="variant-stats">
+        <div class="vs-item"><div class="vs-val mono">${s.pageviews}</div><div class="vs-label">Views</div></div>
+        <div class="vs-item"><div class="vs-val mono">${s.conversions}</div><div class="vs-label">Opt-ins</div></div>
+        <div class="vs-item"><div class="vs-val mono" style="color:var(--green)">${s.opt_in_rate}</div><div class="vs-label">Rate</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderChart(stats, days) {
+  document.getElementById('chartCard').style.display = 'block';
+  document.getElementById('chartPeriod').textContent = 'Last ' + days + ' days';
+  
+  // Collect all dates
+  const allDates = new Set();
+  stats.forEach(s => Object.keys(s.daily || {}).forEach(d => allDates.add(d)));
+  const dates = [...allDates].sort();
+  
+  if (dates.length === 0) {
+    document.getElementById('chartCard').style.display = 'none';
+    return;
+  }
+
+  const datasets = [];
+  const colors = ['#36F5CE', '#FF6240', '#6F36F5', '#00D97E', '#FFB800'];
+  
+  stats.forEach((s, i) => {
+    const color = colors[i % colors.length];
+    datasets.push({
+      label: s.page_slug + ' / ' + s.variant_name + ' (views)',
+      data: dates.map(d => (s.daily[d] || {}).views || 0),
+      borderColor: color,
+      backgroundColor: color + '15',
+      fill: true,
+      tension: 0.3,
+      borderWidth: 2,
+      pointRadius: 2,
+    });
+    datasets.push({
+      label: s.page_slug + ' / ' + s.variant_name + ' (conversions)',
+      data: dates.map(d => (s.daily[d] || {}).conversions || 0),
+      borderColor: color,
+      backgroundColor: 'transparent',
+      borderDash: [5, 5],
+      tension: 0.3,
+      borderWidth: 1.5,
+      pointRadius: 2,
+    });
+  });
+
+  const ctx = document.getElementById('dailyChart').getContext('2d');
+  if (chart) chart.destroy();
+  
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: dates, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: 'rgba(255,255,255,.5)', font: { size: 11, family: 'DM Sans' }, boxWidth: 12 } }
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(255,255,255,.35)', font: { size: 10 }, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,.04)' } },
+        y: { beginAtZero: true, ticks: { color: 'rgba(255,255,255,.35)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } }
+      }
+    }
+  });
+}
+
+function renderTable(stats) {
+  document.getElementById('tableCard').style.display = 'block';
+  document.getElementById('tableBody').innerHTML = stats.map(s => {
+    const rate = parseFloat(s.opt_in_rate);
+    const rateClass = rate >= 5 ? 'high' : rate >= 2 ? 'mid' : 'low';
+    return `<tr>
+      <td>${s.page_slug}</td>
+      <td><strong>${s.variant_name}</strong></td>
+      <td class="mono">${s.pageviews.toLocaleString()}</td>
+      <td class="mono">${s.unique_visitors.toLocaleString()}</td>
+      <td class="mono">${s.conversions.toLocaleString()}</td>
+      <td><span class="rate-pill ${rateClass}">${s.opt_in_rate}</span></td>
+      <td class="mono">${s.unique_opt_in_rate}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Load on start
+loadData();
+document.getElementById('pageFilter').addEventListener('change', loadData);
+document.getElementById('daysFilter').addEventListener('change', loadData);
+</script>
+</body>
+</html>
