@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0A0E17;--bg2:#0e1320;--card:#121829;--border:rgba(54,245,206,.12);--teal:#36F5CE;--teal-dim:rgba(54,245,206,.6);--orange:#FF6240;--text:#fff;--text2:rgba(255,255,255,.65);--green:#00D97E;--red:#FF4D4D}
+:root{--bg:#0A0E17;--bg2:#0e1320;--card:#121829;--border:rgba(54,245,206,.12);--teal:#36F5CE;--teal-dim:rgba(54,245,206,.6);--orange:#FF6240;--text:#fff;--text2:rgba(255,255,255,.65);--green:#00D97E;--red:#FF4D4D;--purple:#6F36F5}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .mono{font-family:'DM Mono',monospace}
 
@@ -22,28 +22,40 @@ button.refresh:hover{opacity:.9}
 
 .container{max-width:1100px;margin:0 auto;padding:24px 20px}
 
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-.kpi-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:6px;font-weight:600}
-.kpi-val{font-size:2rem;font-weight:800}
+.page-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.page-tab{padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--border);transition:all .2s}
+.page-tab.active{background:var(--teal);color:#0A0E17;border-color:var(--teal)}
+.page-tab:hover:not(.active){border-color:var(--teal-dim)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.kpi-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:5px;font-weight:600}
+.kpi-val{font-size:1.8rem;font-weight:800}
 .kpi-val.teal{color:var(--teal)}
 .kpi-val.green{color:var(--green)}
-.kpi-sub{font-size:.78rem;color:var(--text2);margin-top:4px}
+.kpi-sub{font-size:.75rem;color:var(--text2);margin-top:3px}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
-.card-title{font-size:.95rem;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.card-title span{color:var(--text2);font-size:.78rem;font-weight:400}
+.section-title{font-size:.95rem;font-weight:700;margin-bottom:14px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-size:.75rem}
 
-.variants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.variants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
 .variant-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative}
-.variant-card.winner{border-color:var(--green)}
-.variant-card .badge{position:absolute;top:12px;right:12px;background:var(--green);color:#0A0E17;font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.variant-card.winner{border-color:var(--green);box-shadow:0 0 20px rgba(0,217,126,.08)}
+.variant-card .badge{position:absolute;top:12px;right:12px;font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.badge.leading{background:var(--green);color:#0A0E17}
+.badge.control-badge{background:rgba(255,255,255,.1);color:var(--text2)}
 .variant-name{font-size:1.1rem;font-weight:700;margin-bottom:4px}
 .variant-slug{font-size:.78rem;color:var(--text2);margin-bottom:14px}
 .variant-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .vs-item{text-align:center;padding:10px 6px;background:rgba(54,245,206,.05);border-radius:8px}
 .vs-val{font-size:1.3rem;font-weight:800}
 .vs-label{font-size:.68rem;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.vs-diff{font-size:.72rem;margin-top:4px;font-weight:700}
+.vs-diff.up{color:var(--green)}
+.vs-diff.down{color:var(--red)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.card-title span{color:var(--text2);font-size:.78rem;font-weight:400}
 
 .chart-wrap{height:220px;position:relative;margin-top:10px}
 canvas{width:100%!important;height:100%!important}
@@ -65,9 +77,16 @@ tr:hover td{background:rgba(54,245,206,.03)}
 .loading::after{content:'';width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;margin-left:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+.howto{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.howto summary{cursor:pointer;font-weight:700;font-size:.9rem;color:var(--teal)}
+.howto-content{margin-top:12px;font-size:.85rem;color:var(--text2);line-height:1.7}
+.howto-content code{background:rgba(54,245,206,.1);color:var(--teal);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:.8rem}
+.howto-content ol{padding-left:20px;margin:8px 0}
+.howto-content li{margin-bottom:6px}
+
 @media(max-width:600px){
   .kpi-row{grid-template-columns:1fr 1fr}
-  .kpi-val{font-size:1.5rem}
+  .kpi-val{font-size:1.4rem}
   .variants-grid{grid-template-columns:1fr}
 }
 </style>
@@ -77,11 +96,6 @@ tr:hover td{background:rgba(54,245,206,.03)}
 <div class="top-bar">
   <h1><span>◆</span> Landing Page Analytics</h1>
   <div class="controls">
-    <select id="pageFilter">
-      <option value="">All pages</option>
-      <option value="bitebot-vsl-landing">BiteBot VSL</option>
-      <option value="smilegen-demo">SmileGen Demo</option>
-    </select>
     <select id="daysFilter">
       <option value="7">Last 7 days</option>
       <option value="14">Last 14 days</option>
@@ -93,24 +107,45 @@ tr:hover td{background:rgba(54,245,206,.03)}
 </div>
 
 <div class="container">
+  <div id="pageTabs" class="page-tabs"></div>
   <div id="kpis" class="kpi-row"></div>
-  <div id="variants" class="variants-grid"></div>
+  <details class="howto">
+    <summary>How to add a new A/B test variant</summary>
+    <div class="howto-content">
+      <p><strong>Option A — Separate URLs (recommended for Meta ads):</strong></p>
+      <ol>
+        <li>Duplicate the landing page folder in the GitHub repo (e.g. <code>bitebot-vsl-v2/</code>)</li>
+        <li>Change the headline or whatever you're testing</li>
+        <li>In the tracking script at the bottom, change <code>variant_name</code> from <code>"control"</code> to your test name (e.g. <code>"new-headline"</code>)</li>
+        <li>Ask Claude to register the new variant in Supabase</li>
+        <li>Point one ad to <code>/bitebot-vsl-landing/</code> and another to <code>/bitebot-vsl-v2/</code></li>
+      </ol>
+      <p style="margin-top:10px"><strong>Option B — Single URL with auto-split:</strong></p>
+      <ol>
+        <li>Use the <code>/assign</code> endpoint to randomly assign visitors to variants</li>
+        <li>The page loads, calls <code>/assign?page_slug=bitebot-vsl-landing</code>, gets back a variant name</li>
+        <li>JS swaps the headline based on the assigned variant</li>
+        <li>Same URL, 50/50 split, tracked automatically</li>
+      </ol>
+    </div>
+  </details>
+  <div id="variantSection"></div>
   <div id="chartCard" class="card" style="display:none">
     <div class="card-title">Daily trend <span id="chartPeriod"></span></div>
     <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
   </div>
   <div id="tableCard" class="card" style="display:none">
-    <div class="card-title">Variant comparison</div>
+    <div class="card-title">All variants</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Page</th><th>Variant</th><th>Pageviews</th><th>Unique visitors</th><th>Conversions</th><th>Opt-in rate</th><th>Unique opt-in</th></tr></thead>
+        <thead><tr><th>Page</th><th>Variant</th><th>Views</th><th>Unique</th><th>Opt-ins</th><th>Opt-in rate</th><th>Unique rate</th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
   </div>
   <div id="emptyState" class="empty" style="display:none">
     <h3>No data yet</h3>
-    <p>Analytics will appear here once your landing pages start receiving traffic.<br>Make sure you've deployed the updated HTML files with the tracking snippet.</p>
+    <p>Analytics will appear once your landing pages start receiving traffic.</p>
   </div>
   <div id="loadingState" class="loading">Loading analytics...</div>
 </div>
@@ -119,23 +154,49 @@ tr:hover td{background:rgba(54,245,206,.03)}
 <script>
 const ENDPOINT = 'https://llqaeockcoztgdjxgghn.supabase.co/functions/v1/lp-analytics';
 let chart = null;
+let currentPage = '';
+let allStats = [];
+
+async function loadPages() {
+  try {
+    const res = await fetch(ENDPOINT + '/pages');
+    const pages = await res.json();
+    const tabs = document.getElementById('pageTabs');
+    tabs.innerHTML = '<div class="page-tab active" data-page="" onclick="selectPage(this, \'\')">All pages</div>';
+    pages.forEach(p => {
+      const label = p === 'bitebot-vsl-landing' ? 'BiteBot VSL' : p === 'smilegen-demo' ? 'SmileGen Demo' : p;
+      tabs.innerHTML += '<div class="page-tab" data-page="' + p + '" onclick="selectPage(this, \'' + p + '\')">' + label + '</div>';
+    });
+  } catch(e) {}
+}
+
+function selectPage(el, page) {
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentPage = page;
+  renderFiltered();
+}
+
+function renderFiltered() {
+  const filtered = currentPage ? allStats.filter(s => s.page_slug === currentPage) : allStats;
+  renderKPIs(filtered);
+  renderVariants(filtered);
+  renderChart(filtered, document.getElementById('daysFilter').value);
+  renderTable(filtered);
+}
 
 async function loadData() {
-  const page = document.getElementById('pageFilter').value;
   const days = document.getElementById('daysFilter').value;
   
   document.getElementById('loadingState').style.display = 'flex';
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('kpis').innerHTML = '';
-  document.getElementById('variants').innerHTML = '';
+  document.getElementById('variantSection').innerHTML = '';
   document.getElementById('chartCard').style.display = 'none';
   document.getElementById('tableCard').style.display = 'none';
 
   try {
-    let url = ENDPOINT + '/stats?days=' + days;
-    if (page) url += '&page_slug=' + page;
-    
-    const res = await fetch(url);
+    const res = await fetch(ENDPOINT + '/stats?days=' + days);
     const data = await res.json();
     
     document.getElementById('loadingState').style.display = 'none';
@@ -145,10 +206,8 @@ async function loadData() {
       return;
     }
 
-    renderKPIs(data.stats);
-    renderVariants(data.stats);
-    renderChart(data.stats, days);
-    renderTable(data.stats);
+    allStats = data.stats;
+    renderFiltered();
     
   } catch (err) {
     document.getElementById('loadingState').style.display = 'none';
@@ -167,79 +226,107 @@ function renderKPIs(stats) {
   });
   const rate = totalViews > 0 ? ((totalConversions / totalViews) * 100).toFixed(1) : '0.0';
   
-  document.getElementById('kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-label">Total pageviews</div><div class="kpi-val teal mono">${totalViews.toLocaleString()}</div><div class="kpi-sub">${totalUnique.toLocaleString()} unique visitors</div></div>
-    <div class="kpi"><div class="kpi-label">Total conversions</div><div class="kpi-val mono">${totalConversions.toLocaleString()}</div><div class="kpi-sub">Form submissions</div></div>
-    <div class="kpi"><div class="kpi-label">Overall opt-in rate</div><div class="kpi-val green mono">${rate}%</div><div class="kpi-sub">Conversions / pageviews</div></div>
-    <div class="kpi"><div class="kpi-label">Active variants</div><div class="kpi-val mono">${stats.length}</div><div class="kpi-sub">Across ${new Set(stats.map(s=>s.page_slug)).size} page(s)</div></div>
-  `;
+  document.getElementById('kpis').innerHTML = 
+    '<div class="kpi"><div class="kpi-label">Pageviews</div><div class="kpi-val teal mono">' + totalViews.toLocaleString() + '</div><div class="kpi-sub">' + totalUnique.toLocaleString() + ' unique</div></div>' +
+    '<div class="kpi"><div class="kpi-label">Conversions</div><div class="kpi-val mono">' + totalConversions.toLocaleString() + '</div><div class="kpi-sub">Form submits</div></div>' +
+    '<div class="kpi"><div class="kpi-label">Opt-in rate</div><div class="kpi-val green mono">' + rate + '%</div><div class="kpi-sub">Conversions / views</div></div>' +
+    '<div class="kpi"><div class="kpi-label">Variants</div><div class="kpi-val mono">' + stats.length + '</div><div class="kpi-sub">' + new Set(stats.map(s=>s.page_slug)).size + ' page(s)</div></div>';
 }
 
 function renderVariants(stats) {
-  if (stats.length <= 1) {
-    document.getElementById('variants').innerHTML = '';
-    return;
-  }
+  const section = document.getElementById('variantSection');
+  if (stats.length === 0) { section.innerHTML = ''; return; }
   
-  let best = stats[0];
+  // Group by page
+  const byPage = {};
   stats.forEach(s => {
-    if (parseFloat(s.opt_in_rate) > parseFloat(best.opt_in_rate)) best = s;
+    if (!byPage[s.page_slug]) byPage[s.page_slug] = [];
+    byPage[s.page_slug].push(s);
   });
-  
-  document.getElementById('variants').innerHTML = stats.map(s => {
-    const isWinner = stats.length > 1 && s === best && parseFloat(s.opt_in_rate) > 0;
-    return `
-    <div class="variant-card${isWinner ? ' winner' : ''}">
-      ${isWinner ? '<div class="badge">Leading</div>' : ''}
-      <div class="variant-name">${s.variant_name}</div>
-      <div class="variant-slug">${s.page_slug}</div>
-      <div class="variant-stats">
-        <div class="vs-item"><div class="vs-val mono">${s.pageviews}</div><div class="vs-label">Views</div></div>
-        <div class="vs-item"><div class="vs-val mono">${s.conversions}</div><div class="vs-label">Opt-ins</div></div>
-        <div class="vs-item"><div class="vs-val mono" style="color:var(--green)">${s.opt_in_rate}</div><div class="vs-label">Rate</div></div>
-      </div>
-    </div>`;
-  }).join('');
+
+  let html = '';
+  Object.keys(byPage).forEach(page => {
+    const variants = byPage[page];
+    const label = page === 'bitebot-vsl-landing' ? 'BiteBot VSL' : page === 'smilegen-demo' ? 'SmileGen Demo' : page;
+    
+    if (Object.keys(byPage).length > 1 && !currentPage) {
+      html += '<div class="section-title" style="margin-top:10px">' + label + '</div>';
+    }
+
+    // Find winner
+    let best = variants[0];
+    variants.forEach(s => { if (parseFloat(s.opt_in_rate) > parseFloat(best.opt_in_rate)) best = s; });
+    
+    // Find control for diff calculation
+    const control = variants.find(v => v.variant_name === 'control');
+    const controlRate = control ? parseFloat(control.opt_in_rate) : 0;
+
+    html += '<div class="variants-grid">';
+    variants.forEach(s => {
+      const isWinner = variants.length > 1 && s === best && parseFloat(s.opt_in_rate) > 0;
+      const isControl = s.variant_name === 'control';
+      const rate = parseFloat(s.opt_in_rate);
+      let diffHtml = '';
+      if (!isControl && controlRate > 0) {
+        const diff = ((rate - controlRate) / controlRate * 100).toFixed(0);
+        const cls = parseFloat(diff) >= 0 ? 'up' : 'down';
+        const sign = parseFloat(diff) >= 0 ? '+' : '';
+        diffHtml = '<div class="vs-diff ' + cls + '">' + sign + diff + '% vs control</div>';
+      }
+
+      html += '<div class="variant-card' + (isWinner ? ' winner' : '') + '">';
+      if (isWinner) html += '<div class="badge leading">Leading</div>';
+      else if (isControl && variants.length > 1) html += '<div class="badge control-badge">Control</div>';
+      html += '<div class="variant-name">' + s.variant_name + '</div>';
+      html += '<div class="variant-slug">' + s.page_slug + '</div>';
+      html += '<div class="variant-stats">';
+      html += '<div class="vs-item"><div class="vs-val mono">' + s.pageviews + '</div><div class="vs-label">Views</div></div>';
+      html += '<div class="vs-item"><div class="vs-val mono">' + s.conversions + '</div><div class="vs-label">Opt-ins</div></div>';
+      html += '<div class="vs-item"><div class="vs-val mono" style="color:var(--green)">' + s.opt_in_rate + '</div><div class="vs-label">Rate</div>' + diffHtml + '</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  });
+
+  section.innerHTML = html;
 }
 
 function renderChart(stats, days) {
+  if (stats.length === 0) { document.getElementById('chartCard').style.display = 'none'; return; }
   document.getElementById('chartCard').style.display = 'block';
   document.getElementById('chartPeriod').textContent = 'Last ' + days + ' days';
   
-  // Collect all dates
   const allDates = new Set();
   stats.forEach(s => Object.keys(s.daily || {}).forEach(d => allDates.add(d)));
   const dates = [...allDates].sort();
   
-  if (dates.length === 0) {
-    document.getElementById('chartCard').style.display = 'none';
-    return;
-  }
+  if (dates.length === 0) { document.getElementById('chartCard').style.display = 'none'; return; }
 
   const datasets = [];
-  const colors = ['#36F5CE', '#FF6240', '#6F36F5', '#00D97E', '#FFB800'];
+  const colors = ['#36F5CE', '#FF6240', '#6F36F5', '#00D97E', '#FFB800', '#FF4D91'];
   
   stats.forEach((s, i) => {
     const color = colors[i % colors.length];
+    const label = stats.length > 1 ? s.variant_name : s.page_slug;
     datasets.push({
-      label: s.page_slug + ' / ' + s.variant_name + ' (views)',
+      label: label + ' — views',
       data: dates.map(d => (s.daily[d] || {}).views || 0),
       borderColor: color,
       backgroundColor: color + '15',
       fill: true,
       tension: 0.3,
       borderWidth: 2,
-      pointRadius: 2,
+      pointRadius: 3,
     });
     datasets.push({
-      label: s.page_slug + ' / ' + s.variant_name + ' (conversions)',
+      label: label + ' — opt-ins',
       data: dates.map(d => (s.daily[d] || {}).conversions || 0),
       borderColor: color,
       backgroundColor: 'transparent',
       borderDash: [5, 5],
       tension: 0.3,
       borderWidth: 1.5,
-      pointRadius: 2,
+      pointRadius: 3,
     });
   });
 
@@ -248,7 +335,7 @@ function renderChart(stats, days) {
   
   chart = new Chart(ctx, {
     type: 'line',
-    data: { labels: dates, datasets },
+    data: { labels: dates.map(d => d.slice(5)), datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -265,25 +352,18 @@ function renderChart(stats, days) {
 }
 
 function renderTable(stats) {
+  if (stats.length === 0) { document.getElementById('tableCard').style.display = 'none'; return; }
   document.getElementById('tableCard').style.display = 'block';
   document.getElementById('tableBody').innerHTML = stats.map(s => {
     const rate = parseFloat(s.opt_in_rate);
-    const rateClass = rate >= 5 ? 'high' : rate >= 2 ? 'mid' : 'low';
-    return `<tr>
-      <td>${s.page_slug}</td>
-      <td><strong>${s.variant_name}</strong></td>
-      <td class="mono">${s.pageviews.toLocaleString()}</td>
-      <td class="mono">${s.unique_visitors.toLocaleString()}</td>
-      <td class="mono">${s.conversions.toLocaleString()}</td>
-      <td><span class="rate-pill ${rateClass}">${s.opt_in_rate}</span></td>
-      <td class="mono">${s.unique_opt_in_rate}</td>
-    </tr>`;
+    const cls = rate >= 5 ? 'high' : rate >= 2 ? 'mid' : 'low';
+    return '<tr><td>' + s.page_slug + '</td><td><strong>' + s.variant_name + '</strong></td><td class="mono">' + s.pageviews.toLocaleString() + '</td><td class="mono">' + s.unique_visitors.toLocaleString() + '</td><td class="mono">' + s.conversions.toLocaleString() + '</td><td><span class="rate-pill ' + cls + '">' + s.opt_in_rate + '</span></td><td class="mono">' + s.unique_opt_in_rate + '</td></tr>';
   }).join('');
 }
 
-// Load on start
+// Init
+loadPages();
 loadData();
-document.getElementById('pageFilter').addEventListener('change', loadData);
 document.getElementById('daysFilter').addEventListener('change', loadData);
 </script>
 </body>
