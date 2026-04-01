@@ -94,7 +94,7 @@
 
     <script>
         // UTM capture
-        var _utms={};(function(){var p=new URLSearchParams(window.location.search);['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(function(k){var v=p.get(k);if(v)_utms[k]=v;});})();
+        var _utms={};(function(){var p=new URLSearchParams(window.location.search);['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(function(k){var v=p.get(k);if(v)_utms[k]=v;});['campaign.id','placement','site_source_name','ad_name','adset_name','campaign_name'].forEach(function(k){var v=p.get(k);if(v)_utms[k]=v;});})();
 
         // FAQ
         document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{const i=q.parentElement;const o=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));if(!o)i.classList.add('open')}));
