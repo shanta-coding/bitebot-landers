@@ -126,7 +126,7 @@
             if(typeof fbq!=='undefined')fbq('track','Lead',{content_name:'SmileGen Demo Request'});
             var payload={first_name:name.split(' ')[0],last_name:name.split(' ').slice(1).join(' '),full_name:name,email:email,phone:phone,company_name:practice,source:'SmileGen Demo Landing Page',tags:['smilegen-demo-request'],page_url:window.location.href};
             if(window._lpTrackConversion)window._lpTrackConversion();
-            Object.keys(_utms).forEach(function(k){payload[k]=_utms[k];});
+            Object.keys(_utms).forEach(function(k){payload[k]=_utms[k];});if(_utms.utm_content)payload.ad_name=_utms.utm_content;if(_utms.utm_medium)payload.adset_name=_utms.utm_medium;if(_utms.utm_campaign)payload.campaign_name=_utms.utm_campaign;if(_utms.placement)payload.placement=_utms.placement;
             fetch('https://services.leadconnectorhq.com/hooks/Zo56ZZP9H0UDmtC6AzQF/webhook-trigger/7d7b6e6d-4615-4116-ba64-816589952861',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
             var rp=new URLSearchParams({full_name:name,email:email,phone:phone,practice_name:practice});
             Object.keys(_utms).forEach(function(k){rp.set(k,_utms[k]);});
