@@ -1542,7 +1542,7 @@
             }).catch(() => {});
 
             // 3. Track conversion with LP Analytics (Slack attribution)
-            if (window._lpTrackConversion) window._lpTrackConversion({full_name: name});
+            if (window._lpTrackConversion) window._lpTrackConversion({full_name: name, email: email});
 
             // 4. Redirect to scheduling page — pass contact info + UTMs
             const redirectParams = new URLSearchParams({
