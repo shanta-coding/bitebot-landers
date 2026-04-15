@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiteBot Ads Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06080d;--s1:#0d1117;--s2:#151b27;--bd:#1e2736;--bd2:#2a3345;--em:#34d399;--emd:rgba(52,211,153,.1);--bl:#60a5fa;--bld:rgba(96,165,250,.1);--vi:#a78bfa;--vid:rgba(167,139,250,.1);--am:#fbbf24;--amd:rgba(251,191,36,.1);--ro:#fb7185;--rod:rgba(251,113,133,.1);--cy:#22d3ee;--t:#e2e8f0;--t2:#8b97ad;--t3:#4a5568}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 24px}
+
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--em),#059669);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.hdr h1 span{color:var(--em)}
+.live{font-size:9px;background:var(--emd);color:var(--em);padding:3px 8px;border-radius:4px;font-weight:600;font-family:'IBM Plex Mono',monospace;margin-left:8px}
+.fl{display:flex;gap:6px;align-items:center}
+.pg{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+.pl{padding:6px 12px;font-size:11px;font-weight:600;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'Outfit',sans-serif;transition:all .12s}
+.pl:hover{color:var(--t2)}.pl.on{background:var(--em);color:#000}
+
+/* Charts row */
+.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.chart-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:16px;transition:border-color .2s}
+.chart-card:hover{border-color:var(--bd2)}
+.cc-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:12px}
+.cc-wrap{height:200px;position:relative}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--bd)}
+.tab{padding:9px 18px;font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--t2)}.tab.on{color:var(--em);border-bottom-color:var(--em)}
+.cnt{font-size:10px;font-family:'IBM Plex Mono',monospace;background:var(--s2);padding:1px 5px;border-radius:3px;margin-left:5px}
+.tab.on .cnt{background:var(--emd);color:var(--em)}
+
+/* Bar + search */
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.bar-l{font-size:12px;color:var(--t2);font-weight:500}
+.search{padding:7px 11px;border-radius:7px;border:1px solid var(--bd);background:var(--s1);color:var(--t);font-size:11px;width:220px;outline:none;font-family:'Outfit',sans-serif}
+.search:focus{border-color:var(--em)}.search::placeholder{color:var(--t3)}
+
+/* Table */
+.tw{background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 12px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-weight:600;background:var(--s2);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--t2)}th.a::after{content:' ↑';color:var(--em)}th.d::after{content:' ↓';color:var(--em)}
+td{padding:8px 12px;font-size:11px;border-bottom:1px solid var(--bd);color:var(--t2)}
+tr:hover td{background:rgba(52,211,153,.03);color:var(--t)}
+.nm{color:var(--t)!important;font-weight:600}
+.tg{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.te{background:var(--emd);color:var(--em)}.tb{background:var(--bld);color:var(--bl)}.tv{background:var(--vid);color:var(--vi)}.ta{background:var(--amd);color:var(--am)}.tr2{background:var(--rod);color:var(--ro)}
+.utm{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;padding:32px;color:var(--t3);font-size:12px}
+
+.sec{display:none}.sec.on{display:block;animation:fu .2s ease}
+@keyframes fu{from{opacity:0}to{opacity:1}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+@media(max-width:800px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="logo">B</div>
+      <h1>Ads <span>Tracker</span></h1>
+      <div class="live">LIVE</div>
+    </div>
+    <div class="fl">
+      <div class="pg">
+        <button class="pl on" data-d="30">30d</button>
+        <button class="pl" data-d="60">60d</button>
+        <button class="pl" data-d="90">90d</button>
+        <button class="pl" data-d="0">All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts">
+    <div class="chart-card"><div class="cc-title">Winning Creatives</div><div class="cc-wrap"><canvas id="ch1"></canvas></div></div>
+    <div class="chart-card"><div class="cc-title">Top Campaigns</div><div class="cc-wrap"><canvas id="ch2"></canvas></div></div>
+    <div class="chart-card"><div class="cc-title">Top Audiences</div><div class="cc-wrap"><canvas id="ch3"></canvas></div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" data-s="demos">Demos <span class="cnt" id="dc">-</span></div>
+    <div class="tab" data-s="subs">Signups <span class="cnt" id="sc">-</span></div>
+  </div>
+
+  <!-- DEMOS -->
+  <div class="sec on" id="s-demos">
+    <div class="bar">
+      <div class="bar-l" id="dl"></div>
+      <input class="search" id="dq" placeholder="Search name, ad, campaign...">
+    </div>
+    <div class="tw"><div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th data-c="0" data-t="d">Date</th>
+        <th data-c="2" data-t="d">Lead</th>
+        <th data-c="6" data-t="d">Rep</th>
+        <th data-c="8" data-t="d">Ad Creative</th>
+        <th data-c="9" data-t="d">Audience</th>
+        <th data-c="10" data-t="d">Campaign</th>
+        <th data-c="12" data-t="d">Source</th>
+      </tr></thead>
+      <tbody id="db"></tbody>
+    </table></div></div>
+  </div>
+
+  <!-- SUBS -->
+  <div class="sec" id="s-subs">
+    <div class="bar">
+      <div class="bar-l" id="sl"></div>
+      <input class="search" id="sq" placeholder="Search name, plan, ad...">
+    </div>
+    <div class="tw"><div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th data-c="0" data-t="s">Date</th>
+        <th data-c="1" data-t="s">Lead</th>
+        <th data-c="5" data-t="s">Plan</th>
+        <th data-c="6" data-t="s">Amount</th>
+        <th data-c="8" data-t="s">Ad Creative</th>
+        <th data-c="9" data-t="s">Audience</th>
+        <th data-c="10" data-t="s">Campaign</th>
+        <th data-c="12" data-t="s">Source</th>
+      </tr></thead>
+      <tbody id="sb"></tbody>
+    </table></div></div>
+  </div>
+</div>
+
+<script>
+const DSH="https://docs.google.com/spreadsheets/d/1h1MGeFzNf66cxyT3Dn7ZJgQ4JY28kbYgRIiu02syAZA/gviz/tq?tqx=out:json";
+const SSH="https://docs.google.com/spreadsheets/d/1d6LzCK_cqxRTSiMXYsMW-pFEEF_1cmvDSaWJPI1OJLw/gviz/tq?tqx=out:json";
+let DM=[],SU=[],days=30,CH={};
+const CL=['#34d399','#60a5fa','#fbbf24','#fb7185','#a78bfa','#22d3ee','#f97316','#84cc16'];
+Chart.defaults.color='#4a5568';Chart.defaults.borderColor='#1e2736';Chart.defaults.font.family="'Outfit',sans-serif";Chart.defaults.font.size=11;
+
+function pG(t){try{const j=JSON.parse(t.match(/setResponse\((.+)\);/)[1]);return j.table.rows.map(r=>r.c.map(c=>c?(c.v||''):''))}catch(e){return[]}}
+function hasUtm(r,isSub){return !!(r[8]||r[9]||r[10]||r[12])}
+function fDays(data,col){if(days===0)return data;const c=new Date();c.setDate(c.getDate()-days);return data.filter(r=>{try{return new Date(r[col])>=c}catch(e){return true}})}
+function kl(k){if(CH[k]){CH[k].destroy();delete CH[k]}}
+
+function buildCharts(){
+  // Combine demos + subs with UTMs
+  const all=[...fDays(DM,0).filter(r=>hasUtm(r)),...fDays(SU,0).filter(r=>hasUtm(r))];
+  const ads={},camps={},auds={};
+  all.forEach(r=>{
+    if(r[8]){const k=r[8].length>40?r[8].substring(0,40)+'…':r[8];ads[k]=(ads[k]||0)+1}
+    if(r[10]){const k=r[10].length>35?r[10].substring(0,35)+'…':r[10];camps[k]=(camps[k]||0)+1}
+    if(r[9]){const k=r[9].length>35?r[9].substring(0,35)+'…':r[9];auds[k]=(auds[k]||0)+1}
+  });
+  const topN=(o,n=6)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n);
+  
+  function hBar(id,data){
+    kl(id);const it=topN(data);
+    if(!it.length)return;
+    CH[id]=new Chart(document.getElementById(id),{
+      type:'bar',
+      data:{labels:it.map(i=>i[0]),datasets:[{data:it.map(i=>i[1]),backgroundColor:CL.slice(0,it.length),borderRadius:4,barThickness:14}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+' leads'}}},
+        scales:{x:{beginAtZero:true,grid:{color:'#151b27'},ticks:{stepSize:1}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+    });
+  }
+  hBar('ch1',ads);hBar('ch2',camps);hBar('ch3',auds);
+}
+
+function rD(data){
+  const f=fDays(data,0).filter(r=>hasUtm(r));
+  document.getElementById('dc').textContent=f.length;
+  document.getElementById('dl').textContent=f.length+' demos from ads';
+  const tb=document.getElementById('db');
+  if(!f.length){tb.innerHTML='<tr><td colspan="7" class="empty">No demos with attribution found</td></tr>';return}
+  tb.innerHTML=f.map(r=>`<tr>
+    <td><span class="tg tb">${r[0]||''}</span></td>
+    <td class="nm">${r[2]||''}</td>
+    <td>${r[6]||''}</td>
+    <td class="utm" title="${r[8]||''}">${r[8]||''}</td>
+    <td class="utm" title="${r[9]||''}">${r[9]||''}</td>
+    <td class="utm" title="${r[10]||''}">${r[10]||''}</td>
+    <td>${r[12]?`<span class="tg te">${r[12]}</span>`:''}</td>
+  </tr>`).join('');
+}
+
+function rS(data){
+  const f=fDays(data,0).filter(r=>hasUtm(r));
+  const rev=f.reduce((s,d)=>s+(parseInt(String(d[6]||'0').replace(/[^0-9]/g,''))||0),0);
+  document.getElementById('sc').textContent=f.length;
+  document.getElementById('sl').textContent=f.length+' signups from ads — $'+rev.toLocaleString()+' revenue';
+  const tb=document.getElementById('sb');
+  if(!f.length){tb.innerHTML='<tr><td colspan="8" class="empty">No signups with attribution found</td></tr>';return}
+  tb.innerHTML=f.map(r=>{
+    const a=r[6]||'';const tg=a.includes('497')||a.includes('4970')?'tv':a.includes('297')?'tb':'te';
+    return`<tr>
+      <td><span class="tg tb">${r[0]||''}</span></td>
+      <td class="nm">${r[1]||''}</td>
+      <td>${r[5]||''}</td>
+      <td><span class="tg ${tg}">${a}</span></td>
+      <td class="utm" title="${r[8]||''}">${r[8]||''}</td>
+      <td class="utm" title="${r[9]||''}">${r[9]||''}</td>
+      <td class="utm" title="${r[10]||''}">${r[10]||''}</td>
+      <td>${r[12]?`<span class="tg te">${r[12]}</span>`:''}</td>
+    </tr>`}).join('');
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');document.getElementById('s-'+t.dataset.s).classList.add('on');
+}));
+
+// Days filter
+document.querySelectorAll('.pl').forEach(p=>p.addEventListener('click',()=>{
+  document.querySelectorAll('.pl').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');days=parseInt(p.dataset.d);rD(DM);rS(SU);buildCharts();
+}));
+
+// Search
+document.getElementById('dq').addEventListener('input',e=>{const q=e.target.value.toLowerCase();rD(q?DM.filter(d=>d.some(v=>String(v).toLowerCase().includes(q))):DM)});
+document.getElementById('sq').addEventListener('input',e=>{const q=e.target.value.toLowerCase();rS(q?SU.filter(d=>d.some(v=>String(v).toLowerCase().includes(q))):SU)});
+
+// Sort
+document.querySelectorAll('th[data-c]').forEach(th=>{let asc=true;th.addEventListener('click',()=>{
+  const c=parseInt(th.dataset.c);const isDm=th.dataset.t==='d';const data=isDm?DM:SU;
+  th.closest('thead').querySelectorAll('th').forEach(t=>t.classList.remove('a','d'));
+  data.sort((a,b)=>asc?String(a[c]||'').localeCompare(String(b[c]||'')):String(b[c]||'').localeCompare(String(a[c]||'')));
+  th.classList.add(asc?'a':'d');asc=!asc;isDm?rD(data):rS(data);
+})});
+
+async function load(){
+  try{const r=await fetch(DSH);DM=pG(await r.text());rD(DM)}catch(e){document.getElementById('dl').textContent='Error loading'}
+  try{const r=await fetch(SSH);SU=pG(await r.text());rS(SU)}catch(e){document.getElementById('sl').textContent='Error loading'}
+  buildCharts();
+}
+load();
+</script>
+</body>
+</html>
