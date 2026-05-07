@@ -149,6 +149,15 @@ tr:hover td{background:rgba(54,245,206,.03)}
       </table>
     </div>
   </div>
+  <div id="leadsCard" class="card" style="display:none">
+    <div class="card-title">Recent conversions <span id="leadsCount"></span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Page</th><th>Ad</th><th>Audience</th><th>Campaign</th><th>Source</th></tr></thead>
+        <tbody id="leadsBody"></tbody>
+      </table>
+    </div>
+  </div>
   <div id="emptyState" class="empty" style="display:none">
     <h3>No data yet</h3>
     <p>Analytics will appear once your landing pages start receiving traffic.</p>
@@ -214,7 +223,8 @@ function renderFiltered() {
         // Recalculate totals from filtered daily
         let pv = 0, cv = 0;
         Object.values(newDaily).forEach(v => { pv += v.views; cv += v.conversions; });
-        return { ...s, daily: newDaily, pageviews: pv, conversions: cv, opt_in_rate: pv > 0 ? (cv/pv*100).toFixed(2)+'%' : '0%' };
+        // unique_visitors can't be recalculated from daily data, estimate as ~pageviews
+        return { ...s, daily: newDaily, pageviews: pv, conversions: cv, unique_visitors: pv, opt_in_rate: pv > 0 ? (cv/pv*100).toFixed(2)+'%' : '0%', unique_opt_in_rate: pv > 0 ? (cv/pv*100).toFixed(2)+'%' : '0.00%', _custom_range: true };
       });
     }
   }
@@ -260,15 +270,18 @@ async function loadData() {
 
 function renderKPIs(stats) {
   let totalViews = 0, totalConversions = 0, totalUnique = 0;
+  let isCustom = false;
   stats.forEach(s => {
     totalViews += s.pageviews;
     totalConversions += s.conversions;
     totalUnique += s.unique_visitors;
+    if (s._custom_range) isCustom = true;
   });
   const rate = totalViews > 0 ? ((totalConversions / totalViews) * 100).toFixed(1) : '0.0';
+  const uniqueLabel = isCustom ? '≈ ' + totalViews.toLocaleString() + ' visits' : totalUnique.toLocaleString() + ' unique';
   
   document.getElementById('kpis').innerHTML = 
-    '<div class="kpi"><div class="kpi-label">Pageviews</div><div class="kpi-val teal mono">' + totalViews.toLocaleString() + '</div><div class="kpi-sub">' + totalUnique.toLocaleString() + ' unique</div></div>' +
+    '<div class="kpi"><div class="kpi-label">Pageviews</div><div class="kpi-val teal mono">' + totalViews.toLocaleString() + '</div><div class="kpi-sub">' + uniqueLabel + '</div></div>' +
     '<div class="kpi"><div class="kpi-label">Conversions</div><div class="kpi-val mono">' + totalConversions.toLocaleString() + '</div><div class="kpi-sub">Form submits</div></div>' +
     '<div class="kpi"><div class="kpi-label">Opt-in rate</div><div class="kpi-val green mono">' + rate + '%</div><div class="kpi-sub">Conversions / views</div></div>' +
     '<div class="kpi"><div class="kpi-label">Variants</div><div class="kpi-val mono">' + stats.length + '</div><div class="kpi-sub">' + new Set(stats.map(s=>s.page_slug)).size + ' page(s)</div></div>';
@@ -409,6 +422,59 @@ function renderTable(stats) {
 // Init
 loadPages();
 loadData();
+
+// Fetch recent conversions with name/email
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscWFlb2NrY296dGdkanhnZ2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1ODAzNDAsImV4cCI6MjA3MjE1NjM0MH0.xwUZpH0yRYpWwh9bxaLZTAiIbr4vvnYzUXRNj1LjHRA';
+const SB_URL = 'https://llqaeockcoztgdjxgghn.supabase.co/rest/v1';
+
+async function loadLeads() {
+  try {
+    const daysVal = document.getElementById('daysFilter').value;
+    let since;
+    if (daysVal === 'custom') {
+      since = document.getElementById('dateFrom').value || '2026-01-01';
+    } else {
+      const d = new Date(); d.setDate(d.getDate() - parseInt(daysVal));
+      since = d.toISOString();
+    }
+    const toDate = daysVal === 'custom' ? document.getElementById('dateTo').value : '';
+    
+    let url = SB_URL + '/lp_events?event_type=eq.conversion&order=created_at.desc&limit=100&select=created_at,full_name,email,utm_source,utm_content,utm_medium,utm_campaign,lp_variants(page_slug,variant_name)&created_at=gte.' + since;
+    if (toDate) url += '&created_at=lte.' + toDate + 'T23:59:59';
+    
+    const res = await fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } });
+    const leads = await res.json();
+    
+    const card = document.getElementById('leadsCard');
+    const body = document.getElementById('leadsBody');
+    const count = document.getElementById('leadsCount');
+    
+    if (!leads || leads.length === 0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    count.textContent = leads.length + ' conversions';
+    
+    body.innerHTML = leads.map(l => {
+      const date = l.created_at ? l.created_at.split('T')[0] : '';
+      const name = l.full_name || '<span style="color:var(--text2)">—</span>';
+      const email = l.email || '<span style="color:var(--text2)">—</span>';
+      const page = l.lp_variants?.page_slug || '';
+      const pageLabel = page.includes('smilegen') ? 'SmileGen' : page.includes('v2') ? 'BB v2' : 'BiteBot';
+      const ad = l.utm_content || '';
+      const aud = l.utm_medium || '';
+      const camp = l.utm_campaign || '';
+      const src = l.utm_source || '';
+      return '<tr><td class="mono" style="white-space:nowrap">' + date + '</td><td><strong>' + name + '</strong></td><td style="font-size:.78rem">' + email + '</td><td>' + pageLabel + '</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + ad + '">' + ad + '</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + aud + '">' + aud + '</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + camp + '">' + camp + '</td><td>' + src + '</td></tr>';
+    }).join('');
+  } catch(e) { console.error('Leads load error:', e); }
+}
+
+// Load leads on init and on filter change
+loadLeads();
+document.getElementById('daysFilter').addEventListener('change', function() {
+  if (this.value !== 'custom') loadLeads();
+});
+document.getElementById('dateFrom').addEventListener('change', loadLeads);
+document.getElementById('dateTo').addEventListener('change', loadLeads);
 </script>
 </body>
 </html>
