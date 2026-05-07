@@ -3,368 +3,285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Landing Page Analytics — BiteBot</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>BiteBot Ads Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+:root{--bg:#06080d;--s1:#0d1117;--s2:#151b27;--bd:#1e2736;--bd2:#2a3345;--em:#34d399;--emd:rgba(52,211,153,.1);--bl:#60a5fa;--bld:rgba(96,165,250,.1);--vi:#a78bfa;--vid:rgba(167,139,250,.1);--am:#fbbf24;--amd:rgba(251,191,36,.1);--ro:#fb7185;--t:#e2e8f0;--t2:#8b97ad;--t3:#4a5568}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0A0E17;--bg2:#0e1320;--card:#121829;--border:rgba(54,245,206,.12);--teal:#36F5CE;--teal-dim:rgba(54,245,206,.6);--orange:#FF6240;--text:#fff;--text2:rgba(255,255,255,.65);--green:#00D97E;--red:#FF4D4D;--purple:#6F36F5}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.mono{font-family:'DM Mono',monospace}
-
-.top-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.top-bar h1{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px}
-.top-bar h1 span{color:var(--teal)}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-select,button{font-family:inherit;font-size:.82rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;transition:border-color .2s}
-select:focus,button:focus{outline:none;border-color:var(--teal)}
-button.refresh{background:var(--teal);color:#0A0E17;font-weight:700;border:none}
-button.refresh:hover{opacity:.9}
-
-.container{max-width:1100px;margin:0 auto;padding:24px 20px}
-
-.page-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.page-tab{padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--border);transition:all .2s}
-.page-tab.active{background:var(--teal);color:#0A0E17;border-color:var(--teal)}
-.page-tab:hover:not(.active){border-color:var(--teal-dim)}
-
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
-.kpi-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:5px;font-weight:600}
-.kpi-val{font-size:1.8rem;font-weight:800}
-.kpi-val.teal{color:var(--teal)}
-.kpi-val.green{color:var(--green)}
-.kpi-sub{font-size:.75rem;color:var(--text2);margin-top:3px}
-
-.section-title{font-size:.95rem;font-weight:700;margin-bottom:14px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-size:.75rem}
-
-.variants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.variant-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative}
-.variant-card.winner{border-color:var(--green);box-shadow:0 0 20px rgba(0,217,126,.08)}
-.variant-card .badge{position:absolute;top:12px;right:12px;font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
-.badge.leading{background:var(--green);color:#0A0E17}
-.badge.control-badge{background:rgba(255,255,255,.1);color:var(--text2)}
-.variant-name{font-size:1.1rem;font-weight:700;margin-bottom:4px}
-.variant-slug{font-size:.78rem;color:var(--text2);margin-bottom:14px}
-.variant-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.vs-item{text-align:center;padding:10px 6px;background:rgba(54,245,206,.05);border-radius:8px}
-.vs-val{font-size:1.3rem;font-weight:800}
-.vs-label{font-size:.68rem;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
-.vs-diff{font-size:.72rem;margin-top:4px;font-weight:700}
-.vs-diff.up{color:var(--green)}
-.vs-diff.down{color:var(--red)}
-
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
-.card-title{font-size:.95rem;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.card-title span{color:var(--text2);font-size:.78rem;font-weight:400}
-
-.chart-wrap{height:220px;position:relative;margin-top:10px}
-canvas{width:100%!important;height:100%!important}
-
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.85rem}
-th{text-align:left;padding:10px 14px;color:var(--text2);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
-td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03)}
-tr:hover td{background:rgba(54,245,206,.03)}
-.rate-pill{display:inline-block;padding:3px 10px;border-radius:50px;font-weight:700;font-size:.8rem}
-.rate-pill.high{background:rgba(0,217,126,.12);color:var(--green)}
-.rate-pill.low{background:rgba(255,77,77,.12);color:var(--red)}
-.rate-pill.mid{background:rgba(54,245,206,.12);color:var(--teal)}
-
-.empty{text-align:center;padding:60px 20px;color:var(--text2)}
-.empty h3{font-size:1.2rem;color:var(--text);margin-bottom:8px}
-
-.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text2)}
-.loading::after{content:'';width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;margin-left:10px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.howto{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
-.howto summary{cursor:pointer;font-weight:700;font-size:.9rem;color:var(--teal)}
-.howto-content{margin-top:12px;font-size:.85rem;color:var(--text2);line-height:1.7}
-.howto-content code{background:rgba(54,245,206,.1);color:var(--teal);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:.8rem}
-.howto-content ol{padding-left:20px;margin:8px 0}
-.howto-content li{margin-bottom:6px}
-
-@media(max-width:600px){
-  .kpi-row{grid-template-columns:1fr 1fr}
-  .kpi-val{font-size:1.4rem}
-  .variants-grid{grid-template-columns:1fr}
-}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 24px}
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--em),#059669);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px}.hdr h1 span{color:var(--em)}
+.live{font-size:9px;background:var(--emd);color:var(--em);padding:3px 8px;border-radius:4px;font-weight:600;font-family:'IBM Plex Mono',monospace;margin-left:8px}
+.fl{display:flex;gap:6px;align-items:center}
+.pg{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+.pl{padding:6px 12px;font-size:11px;font-weight:600;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'Outfit',sans-serif;transition:all .12s}
+.pl:hover{color:var(--t2)}.pl.on{background:var(--em);color:#000}
+.date-range{display:flex;gap:4px;align-items:center}
+.date-input{padding:5px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--s1);color:var(--t);font-size:11px;font-family:'Outfit',sans-serif;outline:none;width:120px}
+.date-input:focus{border-color:var(--em)}
+.date-label{font-size:10px;color:var(--t3);font-weight:500}
+.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.cc{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:16px;transition:border-color .2s}
+.cc:hover{border-color:var(--bd2)}
+.cc-t{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:12px}
+.cc-w{height:200px;position:relative}
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--bd)}
+.tab{padding:9px 18px;font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--t2)}.tab.on{color:var(--em);border-bottom-color:var(--em)}
+.cnt{font-size:10px;font-family:'IBM Plex Mono',monospace;background:var(--s2);padding:1px 5px;border-radius:3px;margin-left:5px}
+.tab.on .cnt{background:var(--emd);color:var(--em)}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.bar-l{font-size:12px;color:var(--t2);font-weight:500}
+.search{padding:7px 11px;border-radius:7px;border:1px solid var(--bd);background:var(--s1);color:var(--t);font-size:11px;width:220px;outline:none;font-family:'Outfit',sans-serif}
+.search:focus{border-color:var(--em)}.search::placeholder{color:var(--t3)}
+.tw{background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 12px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-weight:600;background:var(--s2);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--t2)}th.a::after{content:' ↑';color:var(--em)}th.d::after{content:' ↓';color:var(--em)}
+td{padding:8px 12px;font-size:11px;border-bottom:1px solid var(--bd);color:var(--t2)}
+tr:hover td{background:rgba(52,211,153,.03);color:var(--t)}
+.nm{color:var(--t)!important;font-weight:600}
+.tg{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.te{background:var(--emd);color:var(--em)}.tb{background:var(--bld);color:var(--bl)}.tv{background:var(--vid);color:var(--vi)}.ta{background:var(--amd);color:var(--am)}
+.utm{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;padding:32px;color:var(--t3);font-size:12px}
+.sec{display:none}.sec.on{display:block;animation:fu .2s ease}
+@keyframes fu{from{opacity:0}to{opacity:1}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+@media(max-width:800px){.charts{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<div class="top-bar">
-  <h1><span>◆</span> Landing Page Analytics</h1>
-  <div class="controls">
-    <select id="daysFilter">
-      <option value="7">Last 7 days</option>
-      <option value="14">Last 14 days</option>
-      <option value="30" selected>Last 30 days</option>
-      <option value="90">Last 90 days</option>
-    </select>
-    <button class="refresh" onclick="loadData()">Refresh</button>
-  </div>
-</div>
-
-<div class="container">
-  <div id="pageTabs" class="page-tabs"></div>
-  <div id="kpis" class="kpi-row"></div>
-  <details class="howto">
-    <summary>How to add a new A/B test variant</summary>
-    <div class="howto-content">
-      <p><strong>Option A — Separate URLs (recommended for Meta ads):</strong></p>
-      <ol>
-        <li>Duplicate the landing page folder in the GitHub repo (e.g. <code>bitebot-vsl-v2/</code>)</li>
-        <li>Change the headline or whatever you're testing</li>
-        <li>In the tracking script at the bottom, change <code>variant_name</code> from <code>"control"</code> to your test name (e.g. <code>"new-headline"</code>)</li>
-        <li>Ask Claude to register the new variant in Supabase</li>
-        <li>Point one ad to <code>/bitebot-vsl-landing/</code> and another to <code>/bitebot-vsl-v2/</code></li>
-      </ol>
-      <p style="margin-top:10px"><strong>Option B — Single URL with auto-split:</strong></p>
-      <ol>
-        <li>Use the <code>/assign</code> endpoint to randomly assign visitors to variants</li>
-        <li>The page loads, calls <code>/assign?page_slug=bitebot-vsl-landing</code>, gets back a variant name</li>
-        <li>JS swaps the headline based on the assigned variant</li>
-        <li>Same URL, 50/50 split, tracked automatically</li>
-      </ol>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="logo">B</div>
+      <h1>Ads <span>Tracker</span></h1>
+      <div class="live">LIVE</div>
     </div>
-  </details>
-  <div id="variantSection"></div>
-  <div id="chartCard" class="card" style="display:none">
-    <div class="card-title">Daily trend <span id="chartPeriod"></span></div>
-    <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
-  </div>
-  <div id="tableCard" class="card" style="display:none">
-    <div class="card-title">All variants</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Page</th><th>Variant</th><th>Views</th><th>Unique</th><th>Opt-ins</th><th>Opt-in rate</th><th>Unique rate</th></tr></thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+    <div class="fl">
+      <div class="pg">
+        <button class="pl on" data-d="30">30d</button>
+        <button class="pl" data-d="60">60d</button>
+        <button class="pl" data-d="90">90d</button>
+        <button class="pl" data-d="0">All</button>
+      </div>
+      <div class="date-range">
+        <input type="date" class="date-input" id="dateFrom" title="From">
+        <span class="date-label">to</span>
+        <input type="date" class="date-input" id="dateTo" title="To">
+      </div>
     </div>
   </div>
-  <div id="emptyState" class="empty" style="display:none">
-    <h3>No data yet</h3>
-    <p>Analytics will appear once your landing pages start receiving traffic.</p>
+  <div class="charts">
+    <div class="cc"><div class="cc-t">🏆 Winning Creatives</div><div class="cc-w"><canvas id="ch1"></canvas></div></div>
+    <div class="cc"><div class="cc-t">📣 Top Campaigns</div><div class="cc-w"><canvas id="ch2"></canvas></div></div>
+    <div class="cc"><div class="cc-t">🎯 Top Audiences</div><div class="cc-w"><canvas id="ch3"></canvas></div></div>
   </div>
-  <div id="loadingState" class="loading">Loading analytics...</div>
+  <div class="tabs">
+    <div class="tab on" data-s="leads">Leads <span class="cnt" id="lc">-</span></div>
+    <div class="tab" data-s="demos">Demos <span class="cnt" id="dc">-</span></div>
+    <div class="tab" data-s="subs">Signups <span class="cnt" id="sc">-</span></div>
+  </div>
+  <div class="sec on" id="s-leads">
+    <div class="bar"><div class="bar-l" id="ll"></div><input class="search" id="lq" placeholder="Search..."></div>
+    <div class="tw"><div style="overflow-x:auto"><table>
+      <thead><tr><th class="srt" data-i="0" data-s="leads">Date</th><th class="srt" data-i="1" data-s="leads">Page</th><th class="srt" data-i="2" data-s="leads">Ad Creative</th><th class="srt" data-i="3" data-s="leads">Audience</th><th class="srt" data-i="4" data-s="leads">Campaign</th><th class="srt" data-i="5" data-s="leads">Source</th></tr></thead>
+      <tbody id="lb"></tbody>
+    </table></div></div>
+  </div>
+  <div class="sec" id="s-demos">
+    <div class="bar"><div class="bar-l" id="dl"></div><input class="search" id="dq" placeholder="Search..."></div>
+    <div class="tw"><div style="overflow-x:auto"><table>
+      <thead><tr><th class="srt" data-i="0" data-s="demos">Date</th><th class="srt" data-i="1" data-s="demos">Name</th><th class="srt" data-i="2" data-s="demos">Email</th><th class="srt" data-i="3" data-s="demos">Rep</th><th class="srt" data-i="4" data-s="demos">Ad Creative</th><th class="srt" data-i="5" data-s="demos">Audience</th><th class="srt" data-i="6" data-s="demos">Campaign</th><th class="srt" data-i="7" data-s="demos">Source</th></tr></thead>
+      <tbody id="db"></tbody>
+    </table></div></div>
+  </div>
+  <div class="sec" id="s-subs">
+    <div class="bar"><div class="bar-l" id="sl"></div><input class="search" id="sq" placeholder="Search..."></div>
+    <div class="tw"><div style="overflow-x:auto"><table>
+      <thead><tr><th class="srt" data-i="0" data-s="subs">Date</th><th class="srt" data-i="1" data-s="subs">Name</th><th class="srt" data-i="2" data-s="subs">Plan</th><th class="srt" data-i="3" data-s="subs">Amount</th><th class="srt" data-i="4" data-s="subs">Ad Creative</th><th class="srt" data-i="5" data-s="subs">Audience</th><th class="srt" data-i="6" data-s="subs">Campaign</th><th class="srt" data-i="7" data-s="subs">Source</th></tr></thead>
+      <tbody id="sb"></tbody>
+    </table></div></div>
+  </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const ENDPOINT = 'https://llqaeockcoztgdjxgghn.supabase.co/functions/v1/lp-analytics';
-let chart = null;
-let currentPage = '';
-let allStats = [];
+const AK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscWFlb2NrY296dGdkanhnZ2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1ODAzNDAsImV4cCI6MjA3MjE1NjM0MH0.xwUZpH0yRYpWwh9bxaLZTAiIbr4vvnYzUXRNj1LjHRA";
+const SB="https://llqaeockcoztgdjxgghn.supabase.co/rest/v1";
+const DEMO_SH="https://docs.google.com/spreadsheets/d/1h1MGeFzNf66cxyT3Dn7ZJgQ4JY28kbYgRIiu02syAZA/gviz/tq?tqx=out:json&gid=1529953754";
+const SUB_SH="https://docs.google.com/spreadsheets/d/1d6LzCK_cqxRTSiMXYsMW-pFEEF_1cmvDSaWJPI1OJLw/gviz/tq?tqx=out:json";
 
-async function loadPages() {
-  try {
-    const res = await fetch(ENDPOINT + '/pages');
-    const pages = await res.json();
-    const tabs = document.getElementById('pageTabs');
-    tabs.innerHTML = '<div class="page-tab active" data-page="" onclick="selectPage(this, \'\')">All pages</div>';
-    pages.forEach(p => {
-      const label = p === 'bitebot-vsl-landing' ? 'BiteBot VSL' : p === 'smilegen-demo' ? 'SmileGen Demo' : p;
-      tabs.innerHTML += '<div class="page-tab" data-page="' + p + '" onclick="selectPage(this, \'' + p + '\')">' + label + '</div>';
-    });
-  } catch(e) {}
-}
+let LEADS=[],DEMOS=[],SUBS=[],days=30,customFrom="",customTo="",CH={};
+const CL=['#34d399','#60a5fa','#fbbf24','#fb7185','#a78bfa','#22d3ee','#f97316','#84cc16'];
+Chart.defaults.color='#4a5568';Chart.defaults.borderColor='#1e2736';Chart.defaults.font.family="'Outfit',sans-serif";Chart.defaults.font.size=11;
+function kl(k){if(CH[k]){CH[k].destroy();delete CH[k]}}
 
-function selectPage(el, page) {
-  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  currentPage = page;
-  renderFiltered();
-}
-
-function renderFiltered() {
-  const filtered = currentPage ? allStats.filter(s => s.page_slug === currentPage) : allStats;
-  renderKPIs(filtered);
-  renderVariants(filtered);
-  renderChart(filtered, document.getElementById('daysFilter').value);
-  renderTable(filtered);
-}
-
-async function loadData() {
-  const days = document.getElementById('daysFilter').value;
-  
-  document.getElementById('loadingState').style.display = 'flex';
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('kpis').innerHTML = '';
-  document.getElementById('variantSection').innerHTML = '';
-  document.getElementById('chartCard').style.display = 'none';
-  document.getElementById('tableCard').style.display = 'none';
-
-  try {
-    const res = await fetch(ENDPOINT + '/stats?days=' + days);
-    const data = await res.json();
-    
-    document.getElementById('loadingState').style.display = 'none';
-    
-    if (!data.stats || data.stats.length === 0) {
-      document.getElementById('emptyState').style.display = 'block';
-      return;
-    }
-
-    allStats = data.stats;
-    renderFiltered();
-    
-  } catch (err) {
-    document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'block';
-    document.getElementById('emptyState').querySelector('h3').textContent = 'Connection error';
-    document.getElementById('emptyState').querySelector('p').textContent = err.message;
+// Parse Google Date(year,month,day) format - month is 0-indexed in Google
+function parseGDate(v){
+  if(!v)return '';
+  if(typeof v==='string'&&v.startsWith('Date(')){
+    const m=v.match(/Date\((\d+),(\d+),(\d+)/);
+    if(m){const y=m[1],mo=String(parseInt(m[2])+1).padStart(2,'0'),d=m[3].padStart(2,'0');return `${y}-${mo}-${d}`}
   }
+  if(typeof v==='string'&&v.match(/^\d{4}-/))return v.split('T')[0];
+  return String(v);
 }
 
-function renderKPIs(stats) {
-  let totalViews = 0, totalConversions = 0, totalUnique = 0;
-  stats.forEach(s => {
-    totalViews += s.pageviews;
-    totalConversions += s.conversions;
-    totalUnique += s.unique_visitors;
-  });
-  const rate = totalViews > 0 ? ((totalConversions / totalViews) * 100).toFixed(1) : '0.0';
-  
-  document.getElementById('kpis').innerHTML = 
-    '<div class="kpi"><div class="kpi-label">Pageviews</div><div class="kpi-val teal mono">' + totalViews.toLocaleString() + '</div><div class="kpi-sub">' + totalUnique.toLocaleString() + ' unique</div></div>' +
-    '<div class="kpi"><div class="kpi-label">Conversions</div><div class="kpi-val mono">' + totalConversions.toLocaleString() + '</div><div class="kpi-sub">Form submits</div></div>' +
-    '<div class="kpi"><div class="kpi-label">Opt-in rate</div><div class="kpi-val green mono">' + rate + '%</div><div class="kpi-sub">Conversions / views</div></div>' +
-    '<div class="kpi"><div class="kpi-label">Variants</div><div class="kpi-val mono">' + stats.length + '</div><div class="kpi-sub">' + new Set(stats.map(s=>s.page_slug)).size + ' page(s)</div></div>';
+function parseSheet(text){
+  const m=text.match(/setResponse\((.+)\);/);
+  if(!m)return[];
+  const j=JSON.parse(m[1]);
+  const rows=j.table.rows||[];
+  // Check if first row is headers (column labels empty)
+  const cols=j.table.cols.map(c=>c.label);
+  const noLabels=!cols[0]||cols[0].length>50; // corrupted headers = very long strings
+  return rows.map(r=>r.c.map(c=>{
+    if(!c)return '';
+    if(c.v===null||c.v===undefined)return '';
+    return c.v;
+  }));
 }
 
-function renderVariants(stats) {
-  const section = document.getElementById('variantSection');
-  if (stats.length === 0) { section.innerHTML = ''; return; }
-  
-  // Group by page
-  const byPage = {};
-  stats.forEach(s => {
-    if (!byPage[s.page_slug]) byPage[s.page_slug] = [];
-    byPage[s.page_slug].push(s);
-  });
-
-  let html = '';
-  Object.keys(byPage).forEach(page => {
-    const variants = byPage[page];
-    const label = page === 'bitebot-vsl-landing' ? 'BiteBot VSL' : page === 'smilegen-demo' ? 'SmileGen Demo' : page;
-    
-    if (Object.keys(byPage).length > 1 && !currentPage) {
-      html += '<div class="section-title" style="margin-top:10px">' + label + '</div>';
-    }
-
-    // Find winner
-    let best = variants[0];
-    variants.forEach(s => { if (parseFloat(s.opt_in_rate) > parseFloat(best.opt_in_rate)) best = s; });
-    
-    // Find control for diff calculation
-    const control = variants.find(v => v.variant_name === 'control');
-    const controlRate = control ? parseFloat(control.opt_in_rate) : 0;
-
-    html += '<div class="variants-grid">';
-    variants.forEach(s => {
-      const isWinner = variants.length > 1 && s === best && parseFloat(s.opt_in_rate) > 0;
-      const isControl = s.variant_name === 'control';
-      const rate = parseFloat(s.opt_in_rate);
-      let diffHtml = '';
-      if (!isControl && controlRate > 0) {
-        const diff = ((rate - controlRate) / controlRate * 100).toFixed(0);
-        const cls = parseFloat(diff) >= 0 ? 'up' : 'down';
-        const sign = parseFloat(diff) >= 0 ? '+' : '';
-        diffHtml = '<div class="vs-diff ' + cls + '">' + sign + diff + '% vs control</div>';
-      }
-
-      html += '<div class="variant-card' + (isWinner ? ' winner' : '') + '">';
-      if (isWinner) html += '<div class="badge leading">Leading</div>';
-      else if (isControl && variants.length > 1) html += '<div class="badge control-badge">Control</div>';
-      html += '<div class="variant-name">' + s.variant_name + '</div>';
-      html += '<div class="variant-slug">' + s.page_slug + '</div>';
-      html += '<div class="variant-stats">';
-      html += '<div class="vs-item"><div class="vs-val mono">' + s.pageviews + '</div><div class="vs-label">Views</div></div>';
-      html += '<div class="vs-item"><div class="vs-val mono">' + s.conversions + '</div><div class="vs-label">Opt-ins</div></div>';
-      html += '<div class="vs-item"><div class="vs-val mono" style="color:var(--green)">' + s.opt_in_rate + '</div><div class="vs-label">Rate</div>' + diffHtml + '</div>';
-      html += '</div></div>';
+function fD(data){
+  if(customFrom||customTo){
+    return data.filter(r=>{
+      const d=parseGDate(r[0]);if(!d)return true;
+      try{const dt=new Date(d);if(customFrom&&dt<new Date(customFrom))return false;if(customTo&&dt>new Date(customTo+"T23:59:59"))return false;return true}catch(e){return true}
     });
-    html += '</div>';
-  });
-
-  section.innerHTML = html;
-}
-
-function renderChart(stats, days) {
-  if (stats.length === 0) { document.getElementById('chartCard').style.display = 'none'; return; }
-  document.getElementById('chartCard').style.display = 'block';
-  document.getElementById('chartPeriod').textContent = 'Last ' + days + ' days';
-  
-  const allDates = new Set();
-  stats.forEach(s => Object.keys(s.daily || {}).forEach(d => allDates.add(d)));
-  const dates = [...allDates].sort();
-  
-  if (dates.length === 0) { document.getElementById('chartCard').style.display = 'none'; return; }
-
-  const datasets = [];
-  const colors = ['#36F5CE', '#FF6240', '#6F36F5', '#00D97E', '#FFB800', '#FF4D91'];
-  
-  stats.forEach((s, i) => {
-    const color = colors[i % colors.length];
-    const label = stats.length > 1 ? s.variant_name : s.page_slug;
-    datasets.push({
-      label: label + ' — views',
-      data: dates.map(d => (s.daily[d] || {}).views || 0),
-      borderColor: color,
-      backgroundColor: color + '15',
-      fill: true,
-      tension: 0.3,
-      borderWidth: 2,
-      pointRadius: 3,
-    });
-    datasets.push({
-      label: label + ' — opt-ins',
-      data: dates.map(d => (s.daily[d] || {}).conversions || 0),
-      borderColor: color,
-      backgroundColor: 'transparent',
-      borderDash: [5, 5],
-      tension: 0.3,
-      borderWidth: 1.5,
-      pointRadius: 3,
-    });
-  });
-
-  const ctx = document.getElementById('dailyChart').getContext('2d');
-  if (chart) chart.destroy();
-  
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: { labels: dates.map(d => d.slice(5)), datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: true, labels: { color: 'rgba(255,255,255,.5)', font: { size: 11, family: 'DM Sans' }, boxWidth: 12 } }
-      },
-      scales: {
-        x: { ticks: { color: 'rgba(255,255,255,.35)', font: { size: 10 }, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,.04)' } },
-        y: { beginAtZero: true, ticks: { color: 'rgba(255,255,255,.35)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } }
-      }
-    }
+  }
+  if(days===0)return data;
+  const c=new Date();c.setDate(c.getDate()-days);
+  return data.filter(r=>{
+    const d=parseGDate(r[0]);
+    if(!d)return true;
+    try{return new Date(d)>=c}catch(e){return true}
   });
 }
 
-function renderTable(stats) {
-  if (stats.length === 0) { document.getElementById('tableCard').style.display = 'none'; return; }
-  document.getElementById('tableCard').style.display = 'block';
-  document.getElementById('tableBody').innerHTML = stats.map(s => {
-    const rate = parseFloat(s.opt_in_rate);
-    const cls = rate >= 5 ? 'high' : rate >= 2 ? 'mid' : 'low';
-    return '<tr><td>' + s.page_slug + '</td><td><strong>' + s.variant_name + '</strong></td><td class="mono">' + s.pageviews.toLocaleString() + '</td><td class="mono">' + s.unique_visitors.toLocaleString() + '</td><td class="mono">' + s.conversions.toLocaleString() + '</td><td><span class="rate-pill ' + cls + '">' + s.opt_in_rate + '</span></td><td class="mono">' + s.unique_opt_in_rate + '</td></tr>';
-  }).join('');
+function buildCharts(){
+  const ads={},camps={},auds={};
+  // Leads: [date, page, ad(2), aud(3), camp(4), src(5)]
+  fD(LEADS).forEach(r=>{if(r[2])ads[r[2]]=(ads[r[2]]||0)+1;if(r[4])camps[r[4]]=(camps[r[4]]||0)+1;if(r[3])auds[r[3]]=(auds[r[3]]||0)+1});
+  // Demos: [date, name, email, rep, ad(4), aud(5), camp(6), src(7)]
+  fD(DEMOS).forEach(r=>{if(r[4])ads[r[4]]=(ads[r[4]]||0)+1;if(r[6])camps[r[6]]=(camps[r[6]]||0)+1;if(r[5])auds[r[5]]=(auds[r[5]]||0)+1});
+  // Subs: [date, name, plan, amt, ad(4), aud(5), camp(6), src(7)]
+  fD(SUBS).forEach(r=>{if(r[4])ads[r[4]]=(ads[r[4]]||0)+1;if(r[6])camps[r[6]]=(camps[r[6]]||0)+1;if(r[5])auds[r[5]]=(auds[r[5]]||0)+1});
+  const topN=(o,n=6)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n);
+  function hBar(id,data){kl(id);const it=topN(data);if(!it.length)return;
+    CH[id]=new Chart(document.getElementById(id),{type:'bar',
+      data:{labels:it.map(i=>i[0].length>30?i[0].substring(0,30)+'…':i[0]),datasets:[{data:it.map(i=>i[1]),backgroundColor:CL.slice(0,it.length),borderRadius:4,barThickness:14}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' leads'}}},scales:{x:{beginAtZero:true,grid:{color:'#151b27'},ticks:{stepSize:1}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});}
+  hBar('ch1',ads);hBar('ch2',camps);hBar('ch3',auds);
 }
 
-// Init
-loadPages();
-loadData();
-document.getElementById('daysFilter').addEventListener('change', loadData);
+// LEADS from Supabase
+async function loadLeads(){
+  try{
+    const r=await fetch(`${SB}/lp_events?event_type=eq.conversion&order=created_at.desc&limit=500&select=created_at,utm_content,utm_medium,utm_campaign,utm_source,lp_variants(page_slug)`,
+      {headers:{'apikey':AK,'Authorization':'Bearer '+AK}});
+    const ev=await r.json();
+    LEADS=ev.filter(e=>e.utm_content||e.utm_medium||e.utm_campaign||e.utm_source).map(e=>[
+      e.created_at?e.created_at.split('T')[0]:'',
+      e.lp_variants?.page_slug?.includes('smilegen')?'SmileGen':'BiteBot',
+      e.utm_content||'',e.utm_medium||'',e.utm_campaign||'',e.utm_source||''
+    ]);
+    renderLeads(LEADS);
+  }catch(e){console.error(e)}
+}
+
+// DEMOS from Google Sheet
+async function loadDemos(){
+  try{
+    const r=await fetch(DEMO_SH);const raw=parseSheet(await r.text());
+    // Sheet cols: 0=date, 1=demo_date, 2=name, 3=email, 4=phone, 5=practice, 6=rep, 7=source, 8=ad, 9=audience, 10=campaign, 11=placement, 12=attr_source
+    DEMOS=raw.map(r=>[parseGDate(r[0]),r[2]||'',r[3]||'',r[6]||'',r[8]||'',r[9]||'',r[10]||'',r[7]||'']);
+    renderDemos(DEMOS);
+  }catch(e){console.error(e)}
+}
+
+// SUBS from Google Sheet  
+async function loadSubs(){
+  try{
+    const r=await fetch(SUB_SH);const raw=parseSheet(await r.text());
+    // Sheet cols: 0=date, 1=name, 2=practice, 3=email, 4=phone, 5=plan, 6=amount, 7=source, 8=ad, 9=audience, 10=campaign, 11=placement, 12=attr_source
+    // First row might be headers
+    const data=raw[0]&&String(raw[0][0]).includes('Date')?raw.slice(1):raw;
+    SUBS=data.map(r=>[parseGDate(r[0]),r[1]||'',r[5]||'',r[6]||'',r[8]||'',r[9]||'',r[10]||'',r[12]||r[7]||'']);
+    renderSubs(SUBS);
+  }catch(e){console.error(e)}
+}
+
+function renderLeads(data){
+  const f=fD(data);
+  document.getElementById('lc').textContent=f.length;
+  document.getElementById('ll').textContent=f.length+' leads from ads';
+  const tb=document.getElementById('lb');
+  if(!f.length){tb.innerHTML='<tr><td colspan="6" class="empty">No leads with attribution</td></tr>';return}
+  tb.innerHTML=f.map(r=>{const pgc=r[1]==='SmileGen'?'tb':'te';
+    return`<tr><td><span class="tg tb">${r[0]}</span></td><td><span class="tg ${pgc}">${r[1]}</span></td><td class="utm" title="${r[2]}">${r[2]}</td><td class="utm" title="${r[3]}">${r[3]}</td><td class="utm" title="${r[4]}">${r[4]}</td><td>${r[5]?`<span class="tg te">${r[5]}</span>`:''}</td></tr>`}).join('');
+}
+
+function renderDemos(data){
+  const f=fD(data);
+  document.getElementById('dc').textContent=f.length;
+  document.getElementById('dl').textContent=f.length+' demos booked';
+  const tb=document.getElementById('db');
+  if(!f.length){tb.innerHTML='<tr><td colspan="8" class="empty">No demos found</td></tr>';return}
+  tb.innerHTML=f.map(r=>`<tr><td><span class="tg tb">${r[0]}</span></td><td class="nm">${r[1]}</td><td class="utm">${r[2]}</td><td>${r[3]}</td><td class="utm" title="${r[4]}">${r[4]||'<span style="color:var(--t3)">—</span>'}</td><td class="utm" title="${r[5]}">${r[5]||'<span style="color:var(--t3)">—</span>'}</td><td class="utm" title="${r[6]}">${r[6]||'<span style="color:var(--t3)">—</span>'}</td><td>${r[7]?`<span class="tg te">${r[7]}</span>`:''}</td></tr>`).join('');
+}
+
+function renderSubs(data){
+  const f=fD(data);
+  const rev=f.reduce((s,d)=>s+(parseInt(String(d[3]||'0').replace(/[^0-9]/g,''))||0),0);
+  document.getElementById('sc').textContent=f.length;
+  document.getElementById('sl').textContent=f.length+' signups — $'+rev.toLocaleString()+' revenue';
+  const tb=document.getElementById('sb');
+  if(!f.length){tb.innerHTML='<tr><td colspan="8" class="empty">No signups found</td></tr>';return}
+  tb.innerHTML=f.map(r=>{const a=r[3]||'';const tg=a.includes('497')||a.includes('4970')?'tv':a.includes('297')?'tb':'te';
+    return`<tr><td><span class="tg tb">${r[0]}</span></td><td class="nm">${r[1]}</td><td>${r[2]}</td><td><span class="tg ${tg}">${a}</span></td><td class="utm" title="${r[4]}">${r[4]||'<span style="color:var(--t3)">—</span>'}</td><td class="utm" title="${r[5]}">${r[5]||'<span style="color:var(--t3)">—</span>'}</td><td class="utm" title="${r[6]}">${r[6]||'<span style="color:var(--t3)">—</span>'}</td><td>${r[7]?`<span class="tg te">${r[7]}</span>`:''}</td></tr>`}).join('');
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');document.getElementById('s-'+t.dataset.s).classList.add('on');
+}));
+// Days
+document.querySelectorAll('.pl').forEach(p=>p.addEventListener('click',()=>{
+  document.querySelectorAll('.pl').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');days=parseInt(p.dataset.d);
+  customFrom="";customTo="";document.getElementById('dateFrom').value="";document.getElementById('dateTo').value="";
+  renderLeads(LEADS);renderDemos(DEMOS);renderSubs(SUBS);buildCharts();
+}));
+// Custom date range
+document.getElementById('dateFrom').addEventListener('change',function(){
+  customFrom=this.value;document.querySelectorAll('.pl').forEach(x=>x.classList.remove('on'));
+  renderLeads(LEADS);renderDemos(DEMOS);renderSubs(SUBS);buildCharts();
+});
+document.getElementById('dateTo').addEventListener('change',function(){
+  customTo=this.value;document.querySelectorAll('.pl').forEach(x=>x.classList.remove('on'));
+  renderLeads(LEADS);renderDemos(DEMOS);renderSubs(SUBS);buildCharts();
+});
+// Search
+document.getElementById('lq').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderLeads(q?LEADS.filter(d=>d.some(v=>String(v).toLowerCase().includes(q))):LEADS)});
+document.getElementById('dq').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderDemos(q?DEMOS.filter(d=>d.some(v=>String(v).toLowerCase().includes(q))):DEMOS)});
+document.getElementById('sq').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderSubs(q?SUBS.filter(d=>d.some(v=>String(v).toLowerCase().includes(q))):SUBS)});
+// Sort
+document.querySelectorAll('.srt').forEach(th=>{let asc=true;th.addEventListener('click',()=>{
+  const i=parseInt(th.dataset.i);const s=th.dataset.s;const data=s==='leads'?LEADS:s==='demos'?DEMOS:SUBS;
+  th.closest('thead').querySelectorAll('th').forEach(t=>t.classList.remove('a','d'));
+  data.sort((a,b)=>asc?String(a[i]||'').localeCompare(String(b[i]||'')):String(b[i]||'').localeCompare(String(a[i]||'')));
+  th.classList.add(asc?'a':'d');asc=!asc;
+  s==='leads'?renderLeads(data):s==='demos'?renderDemos(data):renderSubs(data);
+})});
+
+async function loadAll(){await Promise.all([loadLeads(),loadDemos(),loadSubs()]);buildCharts()}
+loadAll();
 </script>
 </body>
 </html>
