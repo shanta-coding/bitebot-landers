@@ -144,7 +144,7 @@ tr:hover td{background:rgba(54,245,206,.03)}
     <div class="card-title">All variants</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Page</th><th>Variant</th><th>Views</th><th>Unique</th><th>Opt-ins</th><th>Opt-in rate</th><th>Unique rate</th></tr></thead>
+        <thead><tr><th>URL</th><th>Variant</th><th>Views</th><th>Unique</th><th>Opt-ins</th><th>Opt-in rate</th><th>Unique rate</th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -287,6 +287,18 @@ function renderKPIs(stats) {
     '<div class="kpi"><div class="kpi-label">Variants</div><div class="kpi-val mono">' + stats.length + '</div><div class="kpi-sub">' + new Set(stats.map(s=>s.page_slug)).size + ' page(s)</div></div>';
 }
 
+function getVariantUrl(pageSlug, variantName) {
+  var urls = {
+    'bitebot-vsl-landing|control': 'start.bitebot.io/bitebot-vsl-landing/',
+    'bitebot-vsl-landing|ghl': 'bitebot.io/bbdemo',
+    'bitebot-vsl-landing|v2': 'start.bitebot.io/bitebot-vsl-v2/',
+    'bitebot-vsl-v2|ghl': 'bitebot.io/bbdemo2-opt',
+    'smilegen-demo|control': 'start.bitebot.io/smilegen-demo/',
+    'smilegen-demo|ghl': 'bitebot.io/smilegen',
+  };
+  return urls[pageSlug + '|' + variantName] || pageSlug;
+}
+
 function renderVariants(stats) {
   const section = document.getElementById('variantSection');
   if (stats.length === 0) { section.innerHTML = ''; return; }
@@ -328,8 +340,9 @@ function renderVariants(stats) {
       html += '<div class="variant-card' + (isWinner ? ' winner' : '') + '">';
       if (isWinner) html += '<div class="badge leading">Leading</div>';
       else if (isControl && variants.length > 1) html += '<div class="badge control-badge">Control</div>';
+      var varUrl = getVariantUrl(s.page_slug, s.variant_name);
       html += '<div class="variant-name">' + s.variant_name + '</div>';
-      html += '<div class="variant-slug">' + s.page_slug + '</div>';
+      html += '<div class="variant-slug"><a href="' + varUrl + '" target="_blank" style="color:var(--text2);text-decoration:none;border-bottom:1px dashed var(--text2)">' + varUrl + '</a></div>';
       html += '<div class="variant-stats">';
       html += '<div class="vs-item"><div class="vs-val mono">' + s.pageviews + '</div><div class="vs-label">Views</div></div>';
       html += '<div class="vs-item"><div class="vs-val mono">' + s.conversions + '</div><div class="vs-label">Opt-ins</div></div>';
@@ -415,7 +428,7 @@ function renderTable(stats) {
   document.getElementById('tableBody').innerHTML = stats.map(s => {
     const rate = parseFloat(s.opt_in_rate);
     const cls = rate >= 5 ? 'high' : rate >= 2 ? 'mid' : 'low';
-    return '<tr><td>' + s.page_slug + '</td><td><strong>' + s.variant_name + '</strong></td><td class="mono">' + s.pageviews.toLocaleString() + '</td><td class="mono">' + s.unique_visitors.toLocaleString() + '</td><td class="mono">' + s.conversions.toLocaleString() + '</td><td><span class="rate-pill ' + cls + '">' + s.opt_in_rate + '</span></td><td class="mono">' + s.unique_opt_in_rate + '</td></tr>';
+    return '<tr><td><a href="https://' + getVariantUrl(s.page_slug, s.variant_name) + '" target="_blank" style="color:var(--teal);text-decoration:none">' + getVariantUrl(s.page_slug, s.variant_name) + '</a></td><td><strong>' + s.variant_name + '</strong></td><td class="mono">' + s.pageviews.toLocaleString() + '</td><td class="mono">' + s.unique_visitors.toLocaleString() + '</td><td class="mono">' + s.conversions.toLocaleString() + '</td><td><span class="rate-pill ' + cls + '">' + s.opt_in_rate + '</span></td><td class="mono">' + s.unique_opt_in_rate + '</td></tr>';
   }).join('');
 }
 
